@@ -10,7 +10,7 @@
 }
 
 .back a {
-  color: #087f8c;
+  color: #35d8e2;
   font-weight: 650;
   text-decoration: none;
 }
@@ -24,7 +24,7 @@
 }
 
 .pageHeading h1 {
-  color: #102a43;
+  color: #e8f2ff;
   font-size: clamp(1.8rem, 5vw, 2.5rem);
   letter-spacing: -0.04em;
 }
@@ -32,13 +32,13 @@
 .pageHeading > p:last-child {
   max-width: 38rem;
   margin: 0.65rem 0 0;
-  color: #52677a;
+  color: #a9bacb;
   line-height: 1.6;
 }
 
 .eyebrow {
   margin: 0 0 0.3rem;
-  color: #087f8c;
+  color: #35d8e2;
   font-size: 0.7rem;
   font-weight: 750;
   letter-spacing: 0.12em;

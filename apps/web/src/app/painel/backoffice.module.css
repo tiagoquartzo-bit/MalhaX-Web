@@ -43,3 +43,7 @@
 
 
 
+
+.content :global(a[href^="/painel"]:not([class])) { color: #35d8e2; }
+.content :global(a[href^="/painel"]:not([class]):visited) { color: #35d8e2; }
+.content :global(a[href^="/painel"]:not([class]):hover) { color: #77edf2; }
