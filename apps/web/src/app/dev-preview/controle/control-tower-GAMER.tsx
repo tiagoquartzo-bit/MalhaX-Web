@@ -718,7 +718,7 @@ export function ControlTower() {
   return (
     <main className={styles.page}>
       <header className={styles.topbar}>
-        <Link href="/dev-preview/viagem" className={styles.brand} aria-label="MalhaX — ir para detalhe da viagem">
+        <Link href="/controle" className={styles.brand} aria-label="MalhaX — voltar à visão de controle">
           <Image src="/malhax-symbol.svg" width={512} height={512} alt="" className={styles.brandSymbol} priority />
           <span className={styles.brandWords}><strong>Malha<span>X</span></strong><small>LOGÍSTICA E TECNOLOGIA</small></span>
         </Link>
