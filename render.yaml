@@ -4,8 +4,8 @@ services:
     runtime: node
     plan: free
     rootDir: .
-    buildCommand: corepack enable && corepack pnpm install --frozen-lockfile && corepack pnpm --filter @activia/web exec next build --webpack
-    startCommand: corepack pnpm --filter @activia/web start
+    buildCommand: npm install --global pnpm@11.25.0 && pnpm install --frozen-lockfile && pnpm --filter @activia/web exec next build --webpack
+    startCommand: pnpm --filter @activia/web start
     healthCheckPath: /login
     autoDeploy: true
     envVars:
