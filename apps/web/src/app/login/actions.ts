@@ -36,7 +36,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
     .eq("user_id", data.user.id);
 
   if (roleError) {
-    redirect("/acesso-indisponivel");
+    return { error: "Não foi possível identificar o perfil da conta. Tente novamente." };
   }
 
   const roles = (roleRows ?? []).map((row) => row.role as string);
@@ -50,10 +50,10 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   if (hasOperationsRole) {
-    redirect("/acesso-indisponivel");
+    redirect("/painel");
   }
 
-  redirect("/acesso-indisponivel");
+  return { error: "Esta conta ainda não tem um perfil de motorista ou acesso operacional." };
 }
 
 export async function signOut(): Promise<void> {

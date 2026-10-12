@@ -471,6 +471,10 @@ function DriversScreen() {
         <div className={styles.driverPanelHeading}>
           <div className={styles.panelHeading}><div><p className={styles.eyebrow}>EQUIPE DE RUA</p><h2>Motoristas e veículos</h2></div></div>
           <div className={styles.driverTools}>
+          <div className={styles.catalogActions}>
+            <Link className={styles.catalogButtonPrimary} href="/painel/motoristas">Cadastrar motorista</Link>
+            <Link className={styles.catalogButton} href="/painel/veiculos">Cadastrar veículo</Link>
+          </div>
           <select className={styles.filterSelect} aria-label="Filtrar por categoria de veículo" value={category} onChange={(event) => setCategory(event.target.value)}>
             {["Todos", "Moto", "Carro/utilitário", "Caminhão"].map((item) => <option key={item}>{item}</option>)}
           </select>
