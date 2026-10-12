@@ -28,11 +28,10 @@ function ageLabel(date: string | null, now: number) {
 
 export function LiveMap({ drivers }: { drivers: LiveDriver[] }) {
   const router = useRouter();
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const initialClock = window.setTimeout(() => setNow(Date.now()), 0);
     const timer = window.setInterval(() => { setNow(Date.now()); router.refresh(); }, 10_000);
-    return () => { window.clearTimeout(initialClock); window.clearInterval(timer); };
+    return () => window.clearInterval(timer);
   }, [router]);
   const located = drivers.filter((driver) => driver.latitude !== null && driver.longitude !== null);
   const minLat = located.length ? Math.min(...located.map((driver) => driver.latitude!)) : 0;
@@ -61,7 +60,7 @@ export function LiveMap({ drivers }: { drivers: LiveDriver[] }) {
     return { x: projected.x - left, y: projected.y - top };
   };
   return <>
-    <div className={styles.liveMeta}><span className={styles.pulse} />Consulta as posições a cada 10 segundos <span>· painel atualizado {now ? new Intl.DateTimeFormat("pt-BR", { timeStyle: "medium" }).format(now) : "sincronizando"}</span></div>
+    <div className={styles.liveMeta}><span className={styles.pulse} />Consulta as posições a cada 10 segundos <span>· painel atualizado {new Intl.DateTimeFormat("pt-BR", { timeStyle: "medium" }).format(now)}</span></div>
     {located.length ? <section className={styles.coordinateMap} aria-label="Mapa viário OpenStreetMap com posição GPS dos motoristas">
       <div className={styles.mapHeading}><strong>Posições GPS recebidas</strong><span>Mapa OpenStreetMap · atualização a cada 10 segundos</span></div>
       <div className={styles.mapViewport} role="img" aria-label={`Mapa OpenStreetMap com ${located.length} motorista(s) localizado(s)`}>

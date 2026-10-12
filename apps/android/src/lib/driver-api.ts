@@ -36,53 +36,6 @@ export type DriverTrip = {
   stops: DriverStop[];
 };
 
-export type DriverRoute = {
-  geometry: { type: "LineString"; coordinates: Array<[number, number]> };
-  distance_meters: number | null;
-  duration_seconds: number | null;
-  steps: Array<{ instruction: string; distance_meters: number; duration_seconds: number; coordinate_index: number }>;
-  attribution: string;
-};
-
-export async function calculateDriverRoute(tripId: string, stopId: string, origin: { latitude: number; longitude: number }): Promise<DriverRoute> {
-  const { data, error } = await supabase.functions.invoke("driver-route", {
-    body: { trip_id: tripId, stop_id: stopId, origin },
-  });
-  const messages: Record<string, string> = {
-    routing_service_not_configured: "O serviço de rotas está ativo, mas falta configurar a chave gratuita do OpenRouteService no backend.",
-    stop_coordinates_missing: "Esta parada ainda não tem coordenadas cadastradas.",
-    routing_quota_exceeded: "O limite diário de rotas foi atingido. Tente novamente mais tarde.",
-    routing_provider_unavailable: "O serviço de rotas está indisponível no momento.",
-    route_calculation_failed: "Não foi possível calcular a rota para este destino.",
-    trip_not_available: "Esta viagem não está disponível para navegação.",
-    driver_profile_required: "Esta conta não possui um perfil de motorista ativo.",
-  };
-  if (error) {
-    const errorContext = (error as Error & { context?: unknown }).context;
-    const context = errorContext && typeof errorContext === "object" && "response" in errorContext
-      ? (errorContext as { response?: unknown }).response ?? errorContext
-      : errorContext;
-    if (context && typeof context === "object" && "status" in context) {
-      const response = context as { status?: number; clone?: () => { json?: () => Promise<unknown> } };
-      let payload: { error?: string } | null = null;
-      try {
-        const cloned = response.clone?.();
-        if (cloned?.json) payload = await cloned.json() as { error?: string };
-      } catch { /* respostas do gateway podem não ser JSON */ }
-      if (payload?.error && messages[payload.error]) throw new Error(messages[payload.error]);
-      if (response.status === 401) throw new Error("A sessão do motorista expirou. Saia e entre novamente no MalhaX.");
-      if (response.status === 404) throw new Error("A função de navegação não foi encontrada no Supabase local.");
-      if (response.status === 503) throw new Error("A função de navegação está ativa, mas falta configurar a chave gratuita do OpenRouteService no backend.");
-    }
-    if (error.name === "FunctionsFetchError") throw new Error("Não foi possível conectar ao Supabase local pelo emulador. Confira a conexão entre o emulador e o computador.");
-    throw new Error(`Falha ao acessar o serviço de navegação (${error.name || "erro de rede"}).`);
-  }
-  if (!data?.geometry?.coordinates?.length || !Array.isArray(data.steps)) {
-    throw new Error(messages[data?.error] ?? "Resposta de rota inválida. Tente novamente.");
-  }
-  return data as DriverRoute;
-}
-
 export type ProofDraft = {
   photo: ImagePicker.ImagePickerAsset;
   locationPhoto: ImagePicker.ImagePickerAsset;

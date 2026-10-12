@@ -346,6 +346,18 @@ export function TripScreen({
     }
   }
 
+  async function openNavigation(stop: DriverStop) {
+    const destination = stop.latitude !== null && stop.longitude !== null
+      ? `${stop.latitude},${stop.longitude}`
+      : [stop.addressLine, stop.addressExtra, stop.district, stop.city, stop.state, stop.postalCode].filter(Boolean).join(", ");
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+    try {
+      await Linking.openURL(url);
+    } catch {
+      setError("Não foi possível abrir o aplicativo de mapas.");
+    }
+  }
+
   async function callContact(stop: DriverStop) {
     const phone = stop.contactPhone?.replace(/[^\d+]/g, "");
     if (!phone) return;
@@ -397,7 +409,7 @@ export function TripScreen({
           {trackingTripId === trip.id ? <Pressable disabled={trackingBusy} onPress={() => Alert.alert("Interromper histórico GPS?", "O mapa terá uma lacuna a partir de agora. Os pontos já registrados continuam salvos.", [{ text: "Manter ativo", style: "cancel" }, { text: "Interromper", style: "destructive", onPress: () => void disableTracking() }])} style={styles.stopTracking}><Text style={styles.stopTrackingText}>{trackingBusy ? "Atualizando…" : "Interromper rastreamento"}</Text></Pressable> : trackingTripId ? <Text style={styles.trackingWarning}>Outra viagem está com o GPS ativo.</Text> : <Pressable disabled={trackingBusy} onPress={confirmTrackingStart} style={styles.startTracking}><Text style={styles.startTrackingText}>{trackingBusy ? "Iniciando…" : "Iniciar histórico GPS"}</Text></Pressable>}
         </View>
       ) : null}
-        {trip.status === "in_progress" ? <GpsStatusPanel active={trackingTripId === trip.id} stops={displayedStops} tripId={trip.id} activeStop={activeStop} fallbackCenter={trip.stops.some((stop) => /demonstra/i.test(stop.addressLabel)) ? { latitude: -23.72865, longitude: -46.78707, label: "Jardim Amália · CEP 05890-010" } : undefined} /> : null}
+        {trip.status === "in_progress" ? <GpsStatusPanel active={trackingTripId === trip.id} stops={displayedStops} /> : null}
         {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
         {displayedStops.map((stop) => {
           const isActive = activeStop?.id === stop.id;
@@ -431,6 +443,7 @@ export function TripScreen({
               <View style={styles.packages}>
                 {stop.packages.map((item, index) => <Text key={`${item.code}-${index}`} style={styles.packageCode}>{item.action === "load" ? "Coletar" : item.action === "unload" ? "Entregar" : "Retorno"} · {item.code}{item.description ? ` · ${item.description}` : ""}</Text>)}
               </View>
+              {isActive ? <Pressable onPress={() => void openNavigation(stop)} style={styles.secondaryButton}><Text style={styles.secondaryText}>Abrir rota no Google Maps</Text></Pressable> : null}
               {isActive && trip.status !== "paused" && stop.status === "pending" ? <ActionButton busy={isBusy} label="Cheguei ao local" onPress={() => void changeStatus(stop, "arrived")} /> : null}
               {isActive && trip.status !== "paused" && stop.status === "arrived" ? <ActionButton busy={isBusy} label="Iniciar atendimento" onPress={() => void changeStatus(stop, "in_progress")} /> : null}
               {isActive && trip.status !== "paused" && stop.status === "in_progress" && stop.type !== "delivery" ? <ActionButton busy={isBusy} label="Concluir parada" onPress={() => void changeStatus(stop, "completed")} /> : null}

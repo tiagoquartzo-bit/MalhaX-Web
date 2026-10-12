@@ -36,7 +36,3 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
-
-# Local environment/build artifacts
-*-GAMER.env
-**/.cxx/

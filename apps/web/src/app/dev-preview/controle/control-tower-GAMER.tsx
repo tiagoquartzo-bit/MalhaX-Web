@@ -304,6 +304,7 @@ function HistoryScreen() {
   const route = historicalRoutes.find((item) => item.id === routeId) as HistoricalRoute;
   const dateOptions = [...new Set(historicalRoutes.map((item) => item.dateKey))].sort();
   const currentPoint = route.points[activeIndex];
+  useEffect(() => { setActiveIndex(0); setPlaying(false); }, [routeId]);
   useEffect(() => {
     if (!playing) return;
     const timer = window.setInterval(() => setActiveIndex((current) => {
@@ -322,9 +323,9 @@ function HistoryScreen() {
   return <section className={styles.panel}>
     <div className={styles.panelHeading}><div><p className={styles.eyebrow}>TRAJETO REGISTRADO</p><h2>{route.driver} · {route.day}</h2><small>{route.vehicle}</small></div><button type="button" className={styles.exportButton} onClick={downloadCsv}>↓ Baixar pontos GPS em CSV</button></div>
     <div className={styles.historyControls}>
-      <label>Motorista<select value={route.driver} onChange={(event) => { const next = historicalRoutes.find((item) => item.driver === event.target.value); if (next) { setRouteId(next.id); setActiveIndex(0); setPlaying(false); } }}><option value="Todos">Todos</option>{[...new Set(historicalRoutes.map((item) => item.driver))].map((name) => <option key={name}>{name}</option>)}</select></label>
-      <label>Data<select value={route.dateKey} onChange={(event) => { const next = historicalRoutes.find((item) => item.dateKey === event.target.value); if (next) { setRouteId(next.id); setActiveIndex(0); setPlaying(false); } }}><option value="Todas">Todas</option>{dateOptions.map((date) => <option value={date} key={date}>{new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR")}</option>)}</select></label>
-      <label>Viagem<select value={routeId} onChange={(event) => { setRouteId(event.target.value); setActiveIndex(0); setPlaying(false); }}>{historicalRoutes.map((item) => <option value={item.id} key={item.id}>{item.driver} · {item.day}</option>)}</select></label>
+      <label>Motorista<select value={route.driver} onChange={(event) => { const next = historicalRoutes.find((item) => item.driver === event.target.value); if (next) setRouteId(next.id); }}><option value="Todos">Todos</option>{[...new Set(historicalRoutes.map((item) => item.driver))].map((name) => <option key={name}>{name}</option>)}</select></label>
+      <label>Data<select value={route.dateKey} onChange={(event) => { const next = historicalRoutes.find((item) => item.dateKey === event.target.value); if (next) setRouteId(next.id); }}><option value="Todas">Todas</option>{dateOptions.map((date) => <option value={date} key={date}>{new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR")}</option>)}</select></label>
+      <label>Viagem<select value={routeId} onChange={(event) => setRouteId(event.target.value)}>{historicalRoutes.map((item) => <option value={item.id} key={item.id}>{item.driver} · {item.day}</option>)}</select></label>
       <div className={styles.historySummary}><span><strong>{route.distance}</strong><small>distância estimada</small></span><span><strong>{route.duration}</strong><small>tempo registrado</small></span><span><strong>{route.stops}</strong><small>paradas concluídas</small></span></div>
     </div>
     <div className={styles.gpsQuality}><span className={styles.gpsQualityDot} /><div><strong>Último ponto GPS · {route.points.at(-1)?.time}</strong><small>Precisão registrada ± {route.points.at(-1)?.accuracy} m · histórico demonstrativo</small></div><span className={styles.gpsQualityNote}>Localização histórica, não ao vivo</span></div>

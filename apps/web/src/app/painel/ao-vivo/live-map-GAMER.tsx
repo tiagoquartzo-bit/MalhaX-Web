@@ -18,7 +18,7 @@ function ageLabel(date: string | null, now: number) {
 
 export function LiveMap({ drivers }: { drivers: LiveDriver[] }) {
   const router = useRouter();
-  const [now, setNow] = useState(0);
+  const [now, setNow] = useState(Date.now());
   const [realtimeStatus, setRealtimeStatus] = useState("CONNECTING");
   useEffect(() => {
     const { url, anonKey } = getSupabaseConfig();
@@ -26,12 +26,10 @@ export function LiveMap({ drivers }: { drivers: LiveDriver[] }) {
     const channel = client.channel("live-driver-positions")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "tracking_positions" }, () => router.refresh())
       .subscribe((status) => setRealtimeStatus(status));
-    const initialClock = window.setTimeout(() => setNow(Date.now()), 0);
     const clock = window.setInterval(() => setNow(Date.now()), 10_000);
     const fallback = window.setInterval(() => router.refresh(), 60_000);
     return () => {
       window.clearInterval(clock);
-      window.clearTimeout(initialClock);
       window.clearInterval(fallback);
       void client.removeChannel(channel);
     };
@@ -44,7 +42,7 @@ export function LiveMap({ drivers }: { drivers: LiveDriver[] }) {
   const x = (lon: number) => 40 + (maxLon === minLon ? 50 : ((lon - minLon) / (maxLon - minLon)) * 520);
   const y = (lat: number) => 340 - (maxLat === minLat ? 50 : ((lat - minLat) / (maxLat - minLat)) * 280);
   return <>
-    <div className={styles.liveMeta}><span className={styles.pulse} />{realtimeStatus === "SUBSCRIBED" ? "Canal GPS conectado · atualizações imediatas" : "Reconectando canal GPS · consulta de segurança a cada minuto"} <span>· painel atualizado {now ? new Intl.DateTimeFormat("pt-BR", { timeStyle: "medium" }).format(now) : "sincronizando"}</span></div>
+    <div className={styles.liveMeta}><span className={styles.pulse} />{realtimeStatus === "SUBSCRIBED" ? "Canal GPS conectado · atualizações imediatas" : "Reconectando canal GPS · consulta de segurança a cada minuto"} <span>· painel atualizado {new Intl.DateTimeFormat("pt-BR", { timeStyle: "medium" }).format(now)}</span></div>
     {located.length ? <section className={styles.coordinateMap} aria-label="Visualização local das coordenadas dos motoristas, sem mapa externo">
       <div className={styles.mapHeading}><strong>Posições GPS recebidas</strong><span>Visualização de coordenadas · sem envio a serviços de mapa</span></div>
       <svg viewBox="0 0 600 380" role="img" aria-label="Posição relativa dos motoristas por latitude e longitude">

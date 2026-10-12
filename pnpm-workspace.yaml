@@ -1,8 +1,6 @@
 packages:
   - apps/*
   - packages/*
-allowBuilds:
-  unrs-resolver: true
 minimumReleaseAgeExclude:
   - '@expo/cli@57.0.28'
   - '@expo/config-plugins@57.0.10'
@@ -19,4 +17,3 @@ minimumReleaseAgeExclude:
   - expo-modules-autolinking@57.0.14
   - expo-modules-core@57.0.21
   - expo@57.0.27
-
