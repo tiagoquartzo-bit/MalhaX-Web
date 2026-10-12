@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { createClient } from "../../lib/supabase/server";
 import { signOut } from "../login/actions";
+import styles from "./dashboard.module.css";
 
 type PedidoLinha = {
   id: string;
@@ -45,11 +46,12 @@ export default async function PainelPage() {
 
   if (!temAcessoOperacao) {
     return (
-      <main style={{ maxWidth: 560, margin: "10vh auto", padding: 24 }}>
+      <main className={styles.restricted}>
+        <p className={styles.eyebrow}>MALHAX · ACESSO OPERACIONAL</p>
         <h1>Acesso restrito</h1>
-        <p>Seu usuário não tem acesso ao painel de operações. Motoristas usam o aplicativo Android.</p>
+        <p>Seu usuário não tem acesso ao painel de operações. Motoristas usam o aplicativo MalhaX.</p>
         <form action={signOut}>
-          <button type="submit">Sair</button>
+          <button className={styles.primaryButton} type="submit">Sair da conta</button>
         </form>
       </main>
     );
@@ -73,87 +75,40 @@ export default async function PainelPage() {
   ]);
 
   return (
-    <main style={{ maxWidth: 960, margin: "0 auto", padding: 24 }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <main className={styles.dashboard}>
+      <header className={styles.hero}>
         <div>
-          <h1 style={{ marginBottom: 0 }}>Painel de operações</h1>
-          <small>{perfil?.full_name ?? user.email}</small>
+          <p className={styles.eyebrow}><span /> MALHAX · CENTRAL DE OPERAÇÕES</p>
+          <h1>Visão de controle</h1>
+          <p className={styles.welcome}>Olá, {perfil?.full_name ?? user.email}. Acompanhe pedidos, viagens e a operação da sua equipe.</p>
         </div>
-        <form action={signOut}>
-          <button type="submit">Sair</button>
-        </form>
+        {podeCriarPedido ? <Link className={styles.primaryButton} href="/painel/novo-pedido"><span aria-hidden="true">＋</span> Novo pedido</Link> : null}
       </header>
 
-      <nav style={{ display: "flex", gap: 16, margin: "24px 0" }}>
-        <Link href="/painel/paradas">Coletas e entregas</Link>
-        <Link href="/painel/historico-motoristas">Histórico de motoristas</Link>
+      <nav className={styles.shortcuts} aria-label="Atalhos operacionais">
+        <Link href="/painel/paradas"><span className={styles.shortcutIcon}>↔</span><span><strong>Coletas e entregas</strong><small>Consulte e ajuste as paradas</small></span><span className={styles.arrow}>↗</span></Link>
+        <Link href="/painel/despacho"><span className={styles.shortcutIcon}>⇄</span><span><strong>Despacho de viagens</strong><small>Organize pedidos em viagens</small></span><span className={styles.arrow}>↗</span></Link>
+        <Link href="/painel/acompanhamento"><span className={styles.shortcutIcon}>⌖</span><span><strong>Acompanhamento ao vivo</strong><small>Veja a operação em andamento</small></span><span className={styles.arrow}>↗</span></Link>
       </nav>
-      <section>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <h2>Pedidos</h2>
-          {podeCriarPedido ? <Link href="/painel/novo-pedido">Novo pedido</Link> : null}
-        </div>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Nº</th>
-              <th align="left">Cliente</th>
-              <th align="left">Referência</th>
-              <th align="left">Status</th>
-              <th align="left">Criado em</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(pedidos ?? []).map((p) => (
-              <tr key={p.id}>
-                <td>{p.order_number}</td>
-                <td>{p.clients?.name ?? "—"}</td>
-                <td>{p.external_reference ?? "—"}</td>
-                <td>{p.status}</td>
-                <td>{dataHora.format(new Date(p.created_at))}</td>
-              </tr>
-            ))}
-            {(pedidos ?? []).length === 0 ? (
-              <tr>
-                <td colSpan={5}>Nenhum pedido ainda.</td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
+
+      <section className={styles.metrics} aria-label="Resumo da operação">
+        <article className={styles.metric}><span className={styles.metricIcon}>▤</span><div><strong>{(pedidos ?? []).length}</strong><span>Pedidos recentes</span></div><small>últimos 50</small></article>
+        <article className={styles.metric}><span className={styles.metricIcon}>⌁</span><div><strong>{(viagens ?? []).length}</strong><span>Viagens recentes</span></div><small>últimas 50</small></article>
+        <article className={styles.metric}><span className={styles.metricIcon}>↔</span><div><strong>—</strong><span>Paradas pendentes</span></div><Link href="/painel/paradas">Ver paradas</Link></article>
       </section>
 
-      <nav style={{ display: "flex", gap: 16, margin: "24px 0" }}>
-        <Link href="/painel/paradas">Coletas e entregas</Link>
-        <Link href="/painel/historico-motoristas">Histórico de motoristas</Link>
-      </nav>
-      <section>
-        <h2>Viagens</h2>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr>
-              <th align="left">Nº</th>
-              <th align="left">Status</th>
-              <th align="left">Início previsto</th>
-              <th align="left">Detalhes</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(viagens ?? []).map((v) => (
-              <tr key={v.id}>
-                <td>{v.trip_number}</td>
-                <td>{v.status}</td>
-                <td>{v.planned_start_at ? dataHora.format(new Date(v.planned_start_at)) : "—"}</td>
-                <td><Link href={"/painel/viagens/" + v.id}>Abrir viagem</Link></td>
-              </tr>
-            ))}
-            {(viagens ?? []).length === 0 ? (
-              <tr>
-                <td colSpan={4}>Nenhuma viagem cadastrada.</td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
-      </section>
+      <div className={styles.sections}>
+        <section className={styles.panel}>
+          <div className={styles.panelHeading}><div><p className={styles.sectionLabel}>OPERAÇÃO</p><h2>Pedidos recentes</h2></div><Link className={styles.textLink} href="/painel/paradas">Ver coletas e entregas <span>→</span></Link></div>
+          {(pedidos ?? []).length ? <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th>Pedido</th><th>Cliente</th><th>Referência</th><th>Status</th><th>Criado em</th></tr></thead><tbody>{(pedidos ?? []).map((p) => <tr key={p.id}><td><strong>#{p.order_number}</strong></td><td>{p.clients?.name ?? "—"}</td><td>{p.external_reference ?? "—"}</td><td><span className={styles.status}>{p.status}</span></td><td>{dataHora.format(new Date(p.created_at))}</td></tr>)}</tbody></table></div> : <div className={styles.empty}><span className={styles.emptyIcon}>▤</span><strong>Nenhum pedido cadastrado ainda</strong><p>Quando um pedido for criado, ele aparecerá aqui para acompanhamento.</p>{podeCriarPedido ? <Link className={styles.secondaryButton} href="/painel/novo-pedido">Criar primeiro pedido</Link> : null}</div>}
+        </section>
+
+        <section className={styles.panel}>
+          <div className={styles.panelHeading}><div><p className={styles.sectionLabel}>LOGÍSTICA</p><h2>Viagens recentes</h2></div><Link className={styles.textLink} href="/painel/historico-motoristas">Histórico de motoristas <span>→</span></Link></div>
+          {(viagens ?? []).length ? <div className={styles.tableScroll}><table className={styles.table}><thead><tr><th>Viagem</th><th>Status</th><th>Início previsto</th><th>Detalhes</th></tr></thead><tbody>{(viagens ?? []).map((v) => <tr key={v.id}><td><strong>#{v.trip_number}</strong></td><td><span className={styles.status}>{v.status}</span></td><td>{v.planned_start_at ? dataHora.format(new Date(v.planned_start_at)) : "A definir"}</td><td><Link className={styles.textLink} href={`/painel/viagens/${v.id}`}>Abrir viagem →</Link></td></tr>)}</tbody></table></div> : <div className={styles.empty}><span className={styles.emptyIcon}>⌁</span><strong>Nenhuma viagem cadastrada</strong><p>As viagens criadas pela equipe aparecerão nesta área.</p><Link className={styles.secondaryButton} href="/painel/despacho">Ir para despacho</Link></div>}
+        </section>
+      </div>
+      <footer className={styles.footer}><span>MalhaX · Logística e Tecnologia</span><span>Conectado como {user.email}</span></footer>
     </main>
   );
 }
