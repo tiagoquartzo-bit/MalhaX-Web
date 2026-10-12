@@ -17,3 +17,6 @@ minimumReleaseAgeExclude:
   - expo-modules-autolinking@57.0.14
   - expo-modules-core@57.0.21
   - expo@57.0.27
+
+allowBuilds:
+  unrs-resolver: true
