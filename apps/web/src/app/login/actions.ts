@@ -19,14 +19,41 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
     // Mensagem genérica de propósito: não revela se o e-mail existe.
     return { error: "E-mail ou senha inválidos." };
   }
 
-  redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/painel");
+  if (process.env.NODE_ENV === "development") {
+    redirect("/dev-preview/controle");
+  }
+
+  const { data: roleRows, error: roleError } = await supabase
+    .from("organization_member_roles")
+    .select("role")
+    .eq("user_id", data.user.id);
+
+  if (roleError) {
+    return { error: "Não foi possível identificar o perfil da conta. Tente novamente." };
+  }
+
+  const roles = (roleRows ?? []).map((row) => row.role as string);
+  const hasDriverRole = roles.includes("driver");
+  const hasOperationsRole = roles.some((role) =>
+    ["admin", "manager", "dispatcher", "support", "finance"].includes(role),
+  );
+
+  if (hasDriverRole && !hasOperationsRole) {
+    redirect("/motorista");
+  }
+
+  if (hasOperationsRole) {
+    redirect("/painel");
+  }
+
+  return { error: "Esta conta ainda não tem um perfil de motorista ou acesso operacional." };
 }
 
 export async function signOut(): Promise<void> {
