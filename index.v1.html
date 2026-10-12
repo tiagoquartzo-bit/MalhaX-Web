@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MalhaX | Inteligência logística e tomada de decisão</title>
+<meta name="description" content="MalhaX é a plataforma SaaS B2B de logística e tecnologia que transforma dados em decisões rápidas: rotas, BI e estoque em um só lugar.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070E1A; --bg-2:#0A1628; --blue:#0070F3; --cyan:#00C2CB; --cyan-2:#00E5FF;
+  --muted:#94A3B8; --text:#CBD5E1; --white:#F8FAFC; --green:#10B981;
+  --line:rgba(148,163,184,.16); --r:16px;
+  --grad:linear-gradient(135deg,var(--blue),var(--cyan-2));
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+svg{display:block}
+:focus-visible{outline:2px solid var(--cyan-2);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1160px,100% - 40px);margin-inline:auto}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:12px;font:600 .95rem var(--font);border:1px solid transparent;cursor:pointer;transition:transform .2s,box-shadow .25s,background .25s,border-color .25s}
+.btn-primary{background:var(--grad);color:#021018;box-shadow:0 8px 28px -8px rgba(0,194,203,.55)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 34px -6px rgba(0,229,255,.6)}
+.btn-ghost{background:rgba(255,255,255,.03);border-color:var(--line);color:var(--white)}
+.btn-ghost:hover{border-color:rgba(0,229,255,.5);background:rgba(0,229,255,.06)}
+
+header{position:sticky;top:0;z-index:50;background:rgba(7,14,26,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--white)}
+.brand-text{display:flex;flex-direction:column;line-height:1.1}
+.brand-title{font-weight:800;font-size:1.35rem;letter-spacing:-.03em}
+.brand-title b{color:var(--cyan-2)}
+.brand-sub{font-size:.62rem;font-weight:700;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-top:3px}
+.nav ul{display:none;list-style:none;gap:30px;font-size:.92rem;font-weight:500;color:var(--muted)}
+.nav ul a{transition:color .2s}.nav ul a:hover{color:var(--white)}
+.nav .btn{padding:9px 16px;font-size:.88rem}
+@media(min-width:820px){.nav ul{display:flex}}
+
+.hero{position:relative;padding:56px 0 80px;background:
+  radial-gradient(600px 400px at 85% 20%,rgba(0,112,243,.22),transparent 70%),
+  radial-gradient(500px 360px at 70% 85%,rgba(0,194,203,.14),transparent 70%),var(--bg)}
+.hero::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:56px 56px;mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at 70% 40%,#000 0%,transparent 70%);opacity:.5;pointer-events:none}
+.hero .wrap{position:relative;display:grid;gap:56px;align-items:center}
+@media(min-width:960px){.hero{padding:96px 0 112px}.hero .wrap{grid-template-columns:1.1fr .9fr}}
+.pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid rgba(0,194,203,.3);border-radius:999px;background:rgba(0,194,203,.1);font-size:.84rem;font-weight:600;color:var(--cyan);margin-bottom:22px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(16,185,129,.18)}
+h1{font-size:clamp(2.2rem,5.4vw,3.6rem);line-height:1.1;letter-spacing:-.035em;font-weight:800;color:var(--white);max-width:17ch}
+h1 span{background:linear-gradient(135deg,#fff 20%,var(--cyan-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.lead{margin-top:22px;font-size:1.1rem;color:var(--muted);max-width:52ch}
+.actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.proof{display:flex;flex-wrap:wrap;gap:28px;margin-top:44px;padding-top:26px;border-top:1px solid var(--line)}
+.proof div{font-size:.85rem;color:var(--muted)}
+.proof strong{display:block;font-size:1.5rem;color:var(--white);letter-spacing:-.02em}
+
+.stage{position:relative;display:flex;justify-content:center;padding:10px 0}
+.stage::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(0,229,255,.28),transparent 68%);top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(20px)}
+.phone{position:relative;width:292px;aspect-ratio:292/596;border-radius:46px;padding:10px;background:linear-gradient(160deg,#27354d,#0d1626 40%,#1b2a42);box-shadow:0 0 0 1px #3a4b66,0 40px 80px -20px rgba(0,0,0,.8),0 0 70px -15px rgba(0,194,203,.35)}
+.phone::before,.phone::after{content:"";position:absolute;width:3px;background:#2b3a52;border-radius:2px;right:-3px}
+.phone::before{top:130px;height:64px}.phone::after{top:210px;height:38px}
+.screen{position:relative;height:100%;border-radius:37px;background:var(--bg);overflow:hidden;display:flex;flex-direction:column;padding:0 14px 14px}
+.island{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:92px;height:26px;background:#000;border-radius:20px;z-index:3}
+.status{display:flex;justify-content:space-between;align-items:center;padding:14px 8px 0;height:46px;font-size:.72rem;font-weight:700;color:var(--white)}
+.status .r{display:flex;gap:5px;align-items:center}
+.batt{width:22px;height:11px;border:1.5px solid var(--white);border-radius:3.5px;padding:1px;position:relative}
+.batt::after{content:"";position:absolute;right:-4px;top:2.5px;width:2px;height:4px;background:var(--white);border-radius:0 1px 1px 0}
+.batt i{display:block;width:78%;height:100%;background:var(--green);border-radius:1.5px}
+.appbar{display:flex;align-items:center;gap:10px;margin:8px 0 12px}
+.appbar .t{font-size:.78rem;font-weight:700;color:var(--white);line-height:1.2}
+.appbar .t small{display:block;font-weight:500;color:var(--muted);font-size:.64rem}
+.live{margin-left:auto;font-size:.6rem;font-weight:700;color:var(--green);background:rgba(16,185,129,.12);padding:3px 8px;border-radius:99px}
+.map{position:relative;border-radius:16px;overflow:hidden;background:var(--bg-2);border:1px solid var(--line);height:178px}
+.map svg{width:100%;height:100%}
+.route{stroke-dasharray:5 6;animation:flow 1.4s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-22}}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.kpi{background:var(--bg-2);border:1px solid var(--line);border-radius:14px;padding:10px}
+.kpi small{font-size:.6rem;color:var(--muted);display:block}
+.kpi strong{font-size:1.15rem;color:var(--white);letter-spacing:-.02em;line-height:1.3}
+.kpi em{font-style:normal;font-size:.6rem;color:var(--green);font-weight:700;margin-left:4px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:28px;margin-top:6px}
+.bars i{flex:1;border-radius:2px;background:linear-gradient(var(--cyan-2),var(--blue));opacity:.9}
+.wide{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.homebar{margin:auto auto 0;width:96px;height:4px;border-radius:4px;background:rgba(255,255,255,.55)}
+.float{position:absolute;display:none;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:rgba(10,22,40,.88);border:1px solid var(--line);backdrop-filter:blur(10px);font-size:.78rem;color:var(--white);box-shadow:0 18px 40px -16px #000}
+.float span{display:block;font-size:.68rem;color:var(--muted)}
+.f1{left:0;bottom:90px}.f2{right:0;top:80px}
+@media(min-width:560px){.float{display:flex}}
+
+section.block{padding:96px 0}
+.head{max-width:620px;margin-bottom:48px}
+h2{font-size:clamp(1.8rem,3.6vw,2.6rem);line-height:1.15;letter-spacing:-.03em;color:var(--white);font-weight:800}
+.head p{margin-top:14px;color:var(--muted);font-size:1.05rem}
+.grid{display:grid;gap:20px}
+@media(min-width:760px){.grid{grid-template-columns:repeat(3,1fr)}}
+.card{position:relative;padding:28px;border-radius:var(--r);background:linear-gradient(180deg,rgba(15,28,48,.9),rgba(10,22,40,.9));border:1px solid var(--line);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;isolation:isolate}
+.card::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:linear-gradient(135deg,var(--blue),var(--cyan-2) 55%,transparent);opacity:0;transition:opacity .35s;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);pointer-events:none}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(300px 160px at 20% 0%,rgba(0,229,255,.1),transparent 70%);opacity:0;transition:opacity .35s;z-index:-1}
+.card:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(0,194,203,.45)}
+.card:hover::before,.card:hover::after{opacity:1}
+.ico{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;background:rgba(0,112,243,.12);border:1px solid rgba(0,194,203,.28);color:var(--cyan-2);margin-bottom:22px;transition:box-shadow .35s,background .35s}
+.card:hover .ico{background:rgba(0,229,255,.12);box-shadow:0 0 24px rgba(0,229,255,.35)}
+.badge{display:inline-block;font-size:.74rem;font-weight:600;padding:4px 11px;border-radius:99px;margin-bottom:14px;border:1px solid}
+.b-cyan{color:var(--cyan-2);border-color:rgba(0,229,255,.3);background:rgba(0,229,255,.08)}
+.b-blue{color:#5aa8ff;border-color:rgba(0,112,243,.4);background:rgba(0,112,243,.12)}
+.b-green{color:var(--green);border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.1)}
+.card h3{color:var(--white);font-size:1.2rem;letter-spacing:-.02em;margin-bottom:10px}
+.card p{color:var(--muted);font-size:.96rem}
+.card ul{list-style:none;margin-top:18px;display:grid;gap:8px;font-size:.9rem}
+.card li{display:flex;gap:10px;align-items:flex-start}
+.card li::before{content:"";flex:none;width:14px;height:14px;margin-top:5px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M4 7.2l2 2L10 5' fill='none' stroke='%23070E1A' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/100%}
+
+.cta{padding:0 0 96px}
+.cta-box{position:relative;overflow:hidden;text-align:center;padding:64px 24px;border-radius:28px;border:1px solid rgba(0,229,255,.25);background:
+  radial-gradient(500px 260px at 15% 0%,rgba(0,112,243,.38),transparent 70%),
+  radial-gradient(500px 260px at 90% 100%,rgba(0,194,203,.3),transparent 70%),var(--bg-2);box-shadow:0 0 80px -30px rgba(0,229,255,.4)}
+.cta-box h2{max-width:20ch;margin:0 auto}
+.cta-box p{margin:16px auto 0;max-width:52ch;color:var(--text)}
+.cta-box .actions{justify-content:center}
+.cta-box small{display:block;margin-top:20px;color:var(--muted);font-size:.84rem}
+
+footer{border-top:1px solid var(--line);padding:48px 0 32px;background:#040810}
+.foot{display:grid;gap:32px}
+@media(min-width:760px){.foot{grid-template-columns:1.4fr 1fr 1fr 1fr}}
+.foot p{color:var(--muted);font-size:.9rem;max-width:34ch;margin-top:14px}
+.foot h4{color:var(--white);font-size:.92rem;margin-bottom:12px}
+.foot li{list-style:none;margin-bottom:8px;font-size:.9rem;color:var(--muted)}
+.foot li a:hover{color:var(--cyan-2)}
+.copy{margin-top:40px;padding-top:22px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted)}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#0070F3"/><stop offset="1" stop-color="#00E5FF"/></linearGradient>
+  </defs>
+  <!-- Marca institucional: barras ascendentes + seta (original do projeto) -->
+  <symbol id="mark" viewBox="0 0 100 100" fill="none">
+    <path d="M14 82V36H24V82H14Z" fill="#0C6BE5"/>
+    <path d="M30 82V26H40V82H30Z" fill="#13D0D5"/>
+    <path d="M46 82V18H56V82H46Z" fill="#00E5FF"/>
+    <path d="M57 18L80 8L74 28L57 18Z" fill="#00E5FF"/>
+    <path d="M18 62L45 34L62 36L78 18" stroke="#00E5FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="19" cy="62" r="4" fill="#fff"/><circle cx="44" cy="34" r="4" fill="#fff"/><circle cx="62" cy="36" r="4" fill="#fff"/><circle cx="78" cy="18" r="4" fill="#fff"/>
+    <path d="M14 82V90H82" stroke="#1EE3D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
+  </symbol>
+  <!-- Ícone do app: globo em malha, X central e nós (original do projeto) -->
+  <symbol id="globe" viewBox="0 0 100 100" fill="none">
+    <rect width="100" height="100" rx="24" fill="#0A1628"/>
+    <rect x="1" y="1" width="98" height="98" rx="23" stroke="#00C2CB" stroke-opacity=".45" stroke-width="2"/>
+    <circle cx="50" cy="50" r="38" stroke="#00C2CB" stroke-width="2.5" stroke-dasharray="5 4" opacity=".6"/>
+    <ellipse cx="50" cy="50" rx="38" ry="16" stroke="#0070F3" stroke-width="2" opacity=".6"/>
+    <ellipse cx="50" cy="50" rx="16" ry="38" stroke="#0070F3" stroke-width="2" opacity=".6"/>
+    <path d="M30 30L70 70M70 30L30 70" stroke="#00E5FF" stroke-width="8" stroke-linecap="round"/>
+    <circle cx="30" cy="30" r="4.5" fill="#fff"/><circle cx="70" cy="70" r="4.5" fill="#00E5FF"/><circle cx="70" cy="30" r="4.5" fill="#0070F3"/><circle cx="30" cy="70" r="4.5" fill="#00E5FF"/>
+  </symbol>
+</svg>
+
+<header>
+  <div class="wrap nav">
+    <a href="#topo" class="brand" aria-label="MalhaX, página inicial">
+      <svg width="44" height="44"><use href="#mark"/></svg>
+      <span class="brand-text"><span class="brand-title">Malha<b>X</b></span><span class="brand-sub">Logística e Tecnologia</span></span>
+    </a>
+    <ul>
+      <li><a href="#solucoes">Soluções</a></li>
+      <li><a href="#dados">Decisão &amp; Dados</a></li>
+      <li><a href="#app">Aplicativo</a></li>
+    </ul>
+    <a href="#app" class="btn btn-primary">Acessar App</a>
+  </div>
+</header>
+
+<main id="topo">
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <span class="pill"><span class="dot"></span>Plataforma orientada a decisão</span>
+      <h1>Logística orientada por <span>dados reais</span> e alta tecnologia.</h1>
+      <p class="lead">A MalhaX transforma a complexidade do transporte e da armazenagem em rotas precisas, automação de processos e decisões inteligentes em segundos.</p>
+      <div class="actions">
+        <a href="#app" class="btn btn-primary">Baixar Aplicativo</a>
+        <a href="#solucoes" class="btn btn-ghost">Conhecer Soluções</a>
+      </div>
+      <div class="proof">
+        <div><strong>99,4%</strong>precisão de rota</div>
+        <div><strong>-35%</strong>tempo de decisão em fila</div>
+        <div><strong>3 módulos</strong>em um só ecossistema</div>
+      </div>
+    </div>
+
+    <div class="stage" id="app">
+      <div class="phone" role="img" aria-label="Aplicativo MalhaX Mobile mostrando mapa de rotas ativas e indicadores">
+        <div class="screen">
+          <div class="island"></div>
+          <div class="status"><span>09:41</span>
+            <span class="r">
+              <svg width="15" height="10" viewBox="0 0 15 10" fill="#F8FAFC"><rect y="6" width="2.6" height="4" rx=".6"/><rect x="4" y="4" width="2.6" height="6" rx=".6"/><rect x="8" y="2" width="2.6" height="8" rx=".6"/><rect x="12" width="2.6" height="10" rx=".6"/></svg>
+              <span class="batt"><i></i></span>
+            </span>
+          </div>
+          <div class="appbar">
+            <svg width="34" height="34"><use href="#globe"/></svg>
+            <div class="t">MalhaX Mobile<small>Frotas e conferentes</small></div>
+            <span class="live">Ao vivo</span>
+          </div>
+          <div class="map">
+            <svg viewBox="0 0 260 178" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <g stroke="#94A3B8" stroke-opacity=".12" stroke-width="1"><path d="M0 40h260M0 90h260M0 140h260M50 0v178M130 0v178M210 0v178"/></g>
+              <g fill="none" stroke="#00C2CB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path class="route" d="M30 138L78 104L120 112L168 66L228 40"/>
+                <path class="route" stroke="#00E5FF" d="M30 138L66 60L124 50L168 66"/>
+                <path class="route" stroke="#0070F3" d="M120 112L150 150L222 128"/>
+              </g>
+              <g fill="#070E1A" stroke="#00E5FF" stroke-width="2">
+                <circle cx="30" cy="138" r="5"/><circle cx="120" cy="112" r="5"/><circle cx="168" cy="66" r="5"/><circle cx="228" cy="40" r="5"/><circle cx="66" cy="60" r="4"/><circle cx="222" cy="128" r="4"/>
+              </g>
+              <circle cx="168" cy="66" r="12" fill="#00E5FF" fill-opacity=".15"/>
+            </svg>
+          </div>
+          <div class="kpis">
+            <div class="kpi"><small>Rotas ativas</small><strong>128</strong><em>+12</em>
+              <div class="bars"><i style="height:35%"></i><i style="height:55%"></i><i style="height:42%"></i><i style="height:70%"></i><i style="height:60%"></i><i style="height:88%"></i><i style="height:100%"></i></div>
+            </div>
+            <div class="kpi"><small>Precisão de rota</small><strong>99,4%</strong><em>+0,6</em>
+              <svg viewBox="0 0 100 30" width="100%" height="28" style="margin-top:6px" aria-hidden="true"><polyline points="0,24 14,20 28,22 42,14 56,16 70,8 84,10 100,3" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="kpi wide"><div><small>Entregas hoje</small><strong>2.481</strong></div>
+              <svg viewBox="0 0 90 30" width="84" height="28" aria-hidden="true"><polyline points="0,22 12,18 24,20 36,10 48,14 60,6 72,9 90,2" fill="none" stroke="#00E5FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+          </div>
+          <div class="homebar"></div>
+        </div>
+      </div>
+      <div class="float f1"><svg width="30" height="30"><use href="#mark"/></svg><div>Rota 14 reotimizada<span>Economia de 38 min</span></div></div>
+      <div class="float f2"><span class="dot"></span><div>Estoque sincronizado<span>Há 2 segundos</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="solucoes">
+  <div class="wrap">
+    <div class="head">
+      <h2>Tecnologia que impulsiona o fluxo</h2>
+      <p>Conectamos o transporte rodoviário à inteligência de estoque em um único ecossistema ágil.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="18" r="2.2"/><circle cx="19" cy="6" r="2.2"/><circle cx="12" cy="12" r="2.2"/><path d="M6.6 16.6l3.8-3.2M13.7 10.6l3.8-3M5 15.8V9a3 3 0 013-3h6"/></svg></div>
+        <span class="badge b-cyan">Disponível no app</span>
+        <h3>Malha Logística Inteligente</h3>
+        <p>Roteirização dinâmica com cálculo de tráfego, pedágios e pontos críticos para diminuir o tempo de trânsito da carga.</p>
+        <ul><li>Rastreamento em tempo real</li><li>Reotimização de trajetos</li><li>Alertas de atraso</li></ul>
+      </article>
+      <article class="card" id="dados">
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="12" rx="1"/><rect x="17" y="4" width="4" height="16" rx="1"/><path d="M3 7l5-3 4 2 5-4"/></svg></div>
+        <span class="badge b-blue">IA preditiva</span>
+        <h3>Tomada de Decisão em Dados</h3>
+        <p>Painéis analíticos e alertas preditivos que indicam gargalos antes que eles se transformem em atrasos e custos extras.</p>
+        <ul><li>Painéis executivos</li><li>Previsão de demanda</li><li>Relatórios automáticos</li></ul>
+      </article>
+      <article class="card">
+        <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-5 9 5v10a1 1 0 01-1 1H4a1 1 0 01-1-1z"/><path d="M8 20v-6h8v6M3 9l9 5 9-5"/></svg></div>
+        <span class="badge b-green">Módulo WMS</span>
+        <h3>Gestão de Estoque (WMS)</h3>
+        <p>Conferência ágil via QR Code e código de barras, monitoramento volumétrico e reabastecimento inteligente integrado.</p>
+        <ul><li>Inventário em tempo real</li><li>Conferência por leitura</li><li>Reabastecimento inteligente</li></ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contato">
+  <div class="wrap">
+    <div class="cta-box">
+      <h2>Pronto para transformar sua malha logística com inteligência de dados?</h2>
+      <p>Veja a MalhaX funcionando com o cenário da sua operação. Em uma conversa de 30 minutos mostramos onde estão os ganhos.</p>
+      <div class="actions">
+        <a href="mailto:contato@malhax.com.br?subject=Solicitar%20demonstra%C3%A7%C3%A3o" class="btn btn-primary">Solicitar Demonstração</a>
+        <a href="mailto:contato@malhax.com.br?subject=Falar%20com%20consultor" class="btn btn-ghost">Falar com Consultor</a>
+      </div>
+      <small>Sem compromisso. Respondemos em até 1 dia útil.</small>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a href="#topo" class="brand"><svg width="38" height="38"><use href="#mark"/></svg><span class="brand-text"><span class="brand-title">Malha<b>X</b></span><span class="brand-sub">Inteligência em Movimento</span></span></a>
+        <p>Logística e tecnologia com inteligência de dados para decisões rápidas.</p>
+      </div>
+      <div><h4>Plataforma</h4><ul><li><a href="#solucoes">Malha logística</a></li><li><a href="#dados">Decisão &amp; Dados</a></li><li><a href="#solucoes">Estoque (WMS)</a></li></ul></div>
+      <div><h4>Empresa</h4><ul><li><a href="#app">Aplicativo</a></li><li><a href="#contato">Contato</a></li></ul></div>
+      <div><h4>Legal</h4><ul><li><a href="#">Termos de uso</a></li><li><a href="#">Privacidade</a></li></ul></div>
+    </div>
+    <div class="copy">© 2026 MalhaX Logística e Tecnologia. Todos os direitos reservados.</div>
+  </div>
+</footer>
+
+</body>
+</html>

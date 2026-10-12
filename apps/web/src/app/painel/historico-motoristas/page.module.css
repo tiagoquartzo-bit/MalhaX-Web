@@ -1,0 +1,9 @@
+.page { width: min(100%, 1320px); margin: 0 auto; padding: clamp(1.25rem, 3.5vw, 2.5rem) clamp(.85rem, 2.7vw, 2rem) 4rem; color: #f3f7fb; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+.backLink { display: inline-flex; align-items: center; min-height: 2.25rem; margin-bottom: 1.4rem; padding: .35rem .1rem; color: #69dce6; font-size: .82rem; font-weight: 650; text-decoration: none; }
+.backLink:hover { color: #a0f3f7; text-decoration: underline; }
+.heading { margin: 0 0 1.25rem; }
+.eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 .6rem; color: #00d4de; font-size: .67rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.eyebrow span { width: .45rem; height: .45rem; border-radius: 50%; background: #00c2cb; box-shadow: 0 0 12px rgb(0 194 203 / 45%); }
+.heading h1 { margin: 0; color: #f3f7fb; font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 760; letter-spacing: -.055em; line-height: 1.12; }
+.heading > p:last-child { max-width: 54rem; margin: .8rem 0 0; color: #a8b8ca; font-size: .93rem; line-height: 1.6; }
+.error { margin: 1rem 0; padding: .85rem 1rem; border: 1px solid #713942; border-radius: .7rem; background: #2b1720; color: #ffc2c6; }

@@ -1,0 +1,24 @@
+{
+  "name": "activia-logistica",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "pnpm --parallel --filter @activia/web --filter @activia/android dev",
+    "dev:web": "pnpm --filter @activia/web dev",
+    "dev:android": "pnpm --filter @activia/android dev",
+    "typecheck": "pnpm --recursive --if-present typecheck",
+    "lint:web": "pnpm --filter @activia/web lint",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset:local": "supabase db reset --local",
+    "db:lint:local": "supabase db lint --local",
+    "db:migrations:local": "supabase migration list --local"
+  },
+  "devDependencies": {
+    "supabase": "2.119.0"
+  }
+}

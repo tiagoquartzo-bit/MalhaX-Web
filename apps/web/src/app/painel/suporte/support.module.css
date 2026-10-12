@@ -1,0 +1,39 @@
+.page { width: min(100%, 1080px); margin: 0 auto; padding: clamp(1.25rem, 3.5vw, 2.5rem) clamp(.85rem, 2.7vw, 2rem) 4rem; color: #f3f7fb; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+.backLink { display: inline-flex; align-items: center; min-height: 2.25rem; margin-bottom: 1.4rem; padding: .35rem .1rem; color: #69dce6; font-size: .82rem; font-weight: 650; text-decoration: none; }
+.backLink:hover { color: #a0f3f7; text-decoration: underline; }
+.heading { margin: 0 0 1.45rem; }
+.eyebrow { display: flex; align-items: center; gap: .5rem; margin: 0 0 .6rem; color: #00d4de; font-size: .67rem; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.eyebrow > span { width: .45rem; height: .45rem; border-radius: 50%; background: #00c2cb; box-shadow: 0 0 12px rgb(0 194 203 / 45%); }
+.heading h1 { margin: 0; color: #f3f7fb; font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 760; letter-spacing: -.055em; line-height: 1.12; }
+.heading > p:last-child { margin: .8rem 0 0; color: #a8b8ca; font-size: .93rem; line-height: 1.6; }
+.threadList { display: grid; gap: 1rem; }
+.thread { min-width: 0; padding: clamp(1rem, 2.4vw, 1.35rem); border: 1px solid #294059; border-radius: .9rem; background: linear-gradient(145deg, #0d1b2d, #091524 82%); box-shadow: 0 14px 34px rgb(0 0 0 / 13%); }
+.threadHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.threadIdentity { min-width: 0; }
+.threadIdentity h2 { margin: 0; color: #edf5fc; font-size: 1.18rem; font-weight: 730; letter-spacing: -.025em; }
+.driverLine { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; margin: .45rem 0 .5rem; color: #a6b7c9; font-size: .85rem; }
+.thread :global(a) { color: #58dce6; text-decoration: none; }
+.thread :global(a:hover) { color: #a0f3f7; text-decoration: underline; }
+.thread :global([aria-label^="Ligar"], [aria-label^="Enviar mensagem"]) { font-size: .78rem !important; font-weight: 650; }
+.statusOpen, .statusClosed { display: inline-flex; align-items: center; gap: .45rem; flex: none; padding: .4rem .65rem; border: 1px solid #225a4f; border-radius: 999px; background: #102b25; color: #9de5c8; font-size: .74rem; white-space: nowrap; }
+.statusOpen > span, .statusClosed > span { width: .42rem; height: .42rem; border-radius: 50%; background: #4fd1a0; }
+.statusClosed { border-color: #34475c; background: #152235; color: #b8c6d5; }
+.statusClosed > span { background: #8193a7; }
+.messages { display: grid; gap: .6rem; margin: 1rem 0; }
+.message { min-width: 0; padding: .85rem 1rem; border: 1px solid #23384d; border-radius: .7rem; }
+.messageFromDriver { background: #101f31; color: #e2ebf4; }
+.messageFromTeam { border-color: #20515c; background: #0d2b35; color: #e4f8fa; }
+.messageMeta { display: flex; align-items: baseline; flex-wrap: wrap; gap: .55rem; }
+.messageMeta strong { color: #f1f7fb; font-size: .84rem; }
+.messageMeta time { color: #9cafc1; font-size: .73rem; }
+.message p { margin: .42rem 0 0; color: #d0dce7; font-size: .85rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+.replyForm { display: flex; align-items: stretch; gap: .6rem; }
+.replyForm textarea { flex: 1; min-width: 0; min-height: 3.4rem; padding: .72rem .8rem; border: 1px solid #2b4259; border-radius: .65rem; background: #081321; color: #f3f7fb; font: inherit; font-size: .85rem; resize: vertical; color-scheme: dark; }
+.replyForm textarea::placeholder { color: #7e91a7; }
+.replyForm textarea:focus-visible { outline: 0; border-color: #00c2cb; box-shadow: 0 0 0 3px rgb(0 194 203 / 17%); }
+.replyForm button { min-width: 6.5rem; min-height: 3.4rem; padding: .65rem 1rem; border: 1px solid #00c2cb; border-radius: .65rem; background: #00c2cb; color: #061522; font: inherit; font-size: .83rem; font-weight: 750; cursor: pointer; }
+.replyForm button:hover { border-color: #36e4ea; background: #23d0d8; }
+.replyForm button:focus-visible { outline: 3px solid rgb(0 194 203 / 35%); outline-offset: 2px; }
+.empty, .error { margin: 0; padding: 1rem; border: 1px solid #294059; border-radius: .75rem; background: #0b1728; color: #dce8f3; }
+.error { border-color: #713942; background: #2b1720; color: #ffc2c6; }
+@media (max-width: 640px) { .threadHeader { flex-direction: column; } .replyForm { flex-direction: column; } .replyForm button { width: 100%; } }

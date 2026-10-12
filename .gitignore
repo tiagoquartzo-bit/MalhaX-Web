@@ -1,0 +1,42 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Expo and native build output
+.expo/
+.expo-shared/
+android/.gradle/
+android/app/build/
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.p12
+
+# Supabase local state
+supabase/.temp/
+supabase/.branches/
+
+# OS/editor/temp files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Local environment/build artifacts
+*-GAMER.env
+**/.cxx/

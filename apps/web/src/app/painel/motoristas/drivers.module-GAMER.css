@@ -1,0 +1,44 @@
+.page { width: min(100%, 1240px); margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+.back { margin: 0 0 1.5rem; font-size: .9rem; }
+.back a { color: #087e8b; font-weight: 650; text-decoration: none; }
+.back a:hover { text-decoration: underline; }
+.heading { margin-bottom: 1.5rem; }
+.heading h1 { color: #102a43; font-size: clamp(1.8rem, 5vw, 2.5rem); letter-spacing: -.04em; }
+.heading > p:last-child { max-width: 42rem; margin: .65rem 0 0; color: #526579; line-height: 1.6; }
+.eyebrow { margin: 0 0 .3rem; color: #087e8b; font-size: .68rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
+.layout { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); align-items: start; gap: 1rem; }
+.card { min-width: 0; padding: clamp(1rem, 3vw, 1.4rem); border: 1px solid #dce4ee; border-radius: 1rem; background: #fff; box-shadow: 0 .5rem 1.5rem rgb(15 35 55 / 4%); }
+.fullWidth { grid-column: 1 / -1; }
+.card h2 { margin: 0 0 1rem; color: #102a43; font-size: 1.15rem; letter-spacing: -.02em; }
+.form { display: grid; gap: .85rem; }
+.field { display: grid; min-width: 0; gap: .4rem; color: #243b53; font-size: .84rem; font-weight: 650; }
+.field small { color: #718096; font-size: .74rem; font-weight: 450; }
+.field input, .statusForm input, .statusForm select { width: 100%; min-height: 2.6rem; padding: .62rem .7rem; border: 1px solid #dce4ee; border-radius: .55rem; background: #fff; color: #102a43; font: inherit; font-size: .86rem; }
+.field input:focus-visible, .statusForm input:focus-visible, .statusForm select:focus-visible { outline: 3px solid rgb(0 166 180 / 22%); border-color: #008c98; }
+.note { margin: 0; color: #627d98; font-size: .78rem; line-height: 1.5; }
+.primaryButton, .secondaryButton { min-height: 2.6rem; padding: .62rem .8rem; border-radius: .55rem; font: inherit; font-size: .82rem; font-weight: 750; cursor: pointer; }
+.primaryButton { border: 1px solid #087f8c; background: #087f8c; color: #fff; }
+.secondaryButton { border: 1px solid #9bcbd0; background: #f3fbfb; color: #086b75; }
+.primaryButton:disabled, .secondaryButton:disabled { opacity: .55; cursor: wait; }
+.listHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.listHeading h2 { margin-bottom: 0; }
+.count { display: grid; width: 2rem; height: 2rem; place-items: center; border-radius: 50%; background: #f3fbfb; color: #07636b; font-size: .8rem; font-weight: 750; }
+.list { display: grid; gap: .75rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.driver { padding: .85rem 0; border-bottom: 1px solid #dce4ee; }
+.driver:last-child { border-bottom: 0; }
+.driverHeader { display: flex; align-items: center; gap: .7rem; }
+.avatar { display: grid; flex: none; width: 2.25rem; height: 2.25rem; place-items: center; border-radius: .7rem; background: #eaf2ff; color: #2456a6; font-weight: 800; }
+.driverName { display: grid; flex: 1; min-width: 0; gap: .2rem; color: #102a43; font-size: .88rem; }
+.driverName small { color: #718096; font-size: .74rem; }
+.badge { padding: .3rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 750; white-space: nowrap; }
+.active { background: #e8f7f2; color: #17644e; }
+.pending { background: #fff4e8; color: #8a4700; }
+.blocked { background: #fff3f3; color: #8d2630; }
+.muted { color: #627d98; font-size: .8rem; }
+.statusForm { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(180px, 1.2fr) auto; align-items: start; gap: .5rem; margin: .8rem 0 0 2.95rem; }
+.statusForm .error { grid-column: 1 / -1; }
+.error { margin: 0; padding: .7rem .8rem; border: 1px solid #f1b7bb; border-radius: .55rem; background: #fff3f3; color: #8d2630; font-size: .82rem; }
+.success { margin: 0 0 1rem; padding: .75rem .9rem; border: 1px solid #a8ddcb; border-radius: .6rem; background: #effaf5; color: #17644e; font-size: .86rem; }
+.empty { color: #627d98; font-size: .88rem; }
+@media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .fullWidth { grid-column: auto; } }
+@media (max-width: 620px) { .driverHeader { align-items: flex-start; flex-wrap: wrap; } .driverName { min-width: calc(100% - 3.5rem); } .statusForm { grid-template-columns: 1fr; margin-left: 0; } }

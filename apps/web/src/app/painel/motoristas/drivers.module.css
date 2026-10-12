@@ -1,0 +1,45 @@
+.page { width: min(100%, 1240px); margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+.back { margin: 0 0 1.5rem; font-size: .9rem; }
+.back a { color: #38e1ff; font-weight: 650; text-decoration: none; }
+.back a:hover { text-decoration: underline; }
+.heading { margin-bottom: 1.5rem; }
+.heading h1 { color: #e8f2ff; font-size: clamp(1.8rem, 5vw, 2.5rem); letter-spacing: -.04em; }
+.heading > p:last-child { max-width: 42rem; margin: .65rem 0 0; color: #91abc3; line-height: 1.6; }
+.eyebrow { margin: 0 0 .3rem; color: #38e1ff; font-size: .68rem; font-weight: 750; letter-spacing: .14em; text-transform: uppercase; }
+.layout { display: grid; grid-template-columns: minmax(280px, .75fr) minmax(0, 1.25fr); align-items: start; gap: 1rem; }
+.card { min-width: 0; padding: clamp(1rem, 3vw, 1.4rem); border: 1px solid rgb(112 156 189 / 17%); border-radius: 1rem; background: linear-gradient(145deg, rgb(16 34 53 / 96%), rgb(11 26 43 / 96%)); box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 12%); }
+.fullWidth { grid-column: 1 / -1; }
+.card h2 { margin: 0 0 1rem; color: #f0f6ff; font-size: 1.15rem; letter-spacing: -.02em; }
+.form { display: grid; gap: .85rem; }
+.field { display: grid; min-width: 0; gap: .4rem; color: #c6d7e7; font-size: .84rem; font-weight: 650; }
+.field small { color: #829bb3; font-size: .74rem; font-weight: 450; }
+.field input, .statusForm input, .statusForm select { width: 100%; min-height: 2.6rem; padding: .62rem .7rem; border: 1px solid rgb(112 156 189 / 23%); border-radius: .55rem; background: #091827; color: #e7f3ff; font: inherit; font-size: .86rem; }
+.field input::placeholder, .statusForm input::placeholder { color: #718aa2; }
+.field input:focus-visible, .statusForm input:focus-visible, .statusForm select:focus-visible { outline: 3px solid rgb(56 225 255 / 22%); border-color: #38e1ff; }
+.note { margin: 0; color: #91abc3; font-size: .78rem; line-height: 1.5; }
+.primaryButton, .secondaryButton { min-height: 2.6rem; padding: .62rem .8rem; border-radius: .55rem; font: inherit; font-size: .82rem; font-weight: 750; cursor: pointer; }
+.primaryButton { border: 1px solid #00c2cb; background: #00c2cb; color: #061522; }
+.secondaryButton { border: 1px solid rgb(56 225 255 / 27%); background: rgb(0 194 203 / 8%); color: #8eeeff; }
+.primaryButton:disabled, .secondaryButton:disabled { opacity: .55; cursor: wait; }
+.listHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.listHeading h2 { margin-bottom: 0; }
+.count { display: grid; width: 2rem; height: 2rem; place-items: center; border: 1px solid rgb(56 225 255 / 20%); border-radius: 50%; background: rgb(0 194 203 / 9%); color: #8eeeff; font-size: .8rem; font-weight: 750; }
+.list { display: grid; gap: .75rem; margin: 1rem 0 0; padding: 0; list-style: none; }
+.driver { padding: .85rem 0; border-bottom: 1px solid rgb(112 156 189 / 12%); }
+.driver:last-child { border-bottom: 0; }
+.driverHeader { display: flex; align-items: center; gap: .7rem; }
+.avatar { display: grid; flex: none; width: 2.25rem; height: 2.25rem; place-items: center; border: 1px solid rgb(56 225 255 / 18%); border-radius: .7rem; background: rgb(0 194 203 / 9%); color: #38e1ff; font-weight: 800; }
+.driverName { display: grid; flex: 1; min-width: 0; gap: .2rem; color: #e8f2ff; font-size: .88rem; }
+.driverName small { color: #829bb3; font-size: .74rem; }
+.badge { padding: .3rem .55rem; border-radius: 999px; font-size: .7rem; font-weight: 750; white-space: nowrap; }
+.active { background: rgb(31 190 128 / 12%); color: #85e7bd; }
+.pending { background: rgb(255 177 77 / 12%); color: #ffd08d; }
+.blocked { background: rgb(255 109 109 / 10%); color: #ffaaa5; }
+.muted { color: #91abc3; font-size: .8rem; }
+.statusForm { display: grid; grid-template-columns: minmax(120px, .8fr) minmax(180px, 1.2fr) auto; align-items: start; gap: .5rem; margin: .8rem 0 0 2.95rem; }
+.statusForm .error { grid-column: 1 / -1; }
+.error { margin: 0; padding: .7rem .8rem; border: 1px solid rgb(255 109 109 / 30%); border-radius: .55rem; background: rgb(255 109 109 / 9%); color: #ffaaa5; font-size: .82rem; }
+.success { margin: 0 0 1rem; padding: .75rem .9rem; border: 1px solid rgb(69 214 154 / 26%); border-radius: .6rem; background: rgb(69 214 154 / 8%); color: #85e7bd; font-size: .86rem; }
+.empty { color: #91abc3; font-size: .88rem; }
+@media (max-width: 850px) { .layout { grid-template-columns: 1fr; } .fullWidth { grid-column: auto; } }
+@media (max-width: 620px) { .driverHeader { align-items: flex-start; flex-wrap: wrap; } .driverName { min-width: calc(100% - 3.5rem); } .statusForm { grid-template-columns: 1fr; margin-left: 0; } }

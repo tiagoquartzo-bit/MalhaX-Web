@@ -1,0 +1,56 @@
+.page {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.back {
+  margin: 0 0 1.5rem;
+  font-size: 0.9rem;
+}
+
+.back a {
+  color: #087e8b;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.back a:hover {
+  text-decoration: underline;
+}
+
+.pageHeading {
+  margin: 0 0 1.5rem;
+}
+
+.pageHeading h1 {
+  color: #102a43;
+  font-size: clamp(1.8rem, 5vw, 2.5rem);
+  letter-spacing: -0.04em;
+}
+
+.pageHeading > p:last-child {
+  max-width: 38rem;
+  margin: 0.65rem 0 0;
+  color: #526579;
+  line-height: 1.6;
+}
+
+.eyebrow {
+  margin: 0 0 0.3rem;
+  color: #087e8b;
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.error {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #f1b7bb;
+  border-radius: 0.65rem;
+  background: #fff3f3;
+  color: #8d2630;
+  font-size: 0.88rem;
+}

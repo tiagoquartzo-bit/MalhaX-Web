@@ -1,0 +1,94 @@
+.page {
+  --mx-bg: #070e1a;
+  --mx-panel: #0b1728;
+  --mx-panel-raised: #0e1d31;
+  --mx-line: #20344a;
+  --mx-text: #f3f7fb;
+  --mx-muted: #9aabc0;
+  --mx-cyan: #00c2cb;
+  --mx-cyan-bright: #00e5ff;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: clamp(1.35rem, 4vw, 3rem) clamp(.85rem, 3vw, 2rem) 4rem;
+  color: var(--mx-text);
+  font-family: Inter, "Segoe UI", system-ui, sans-serif;
+}
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  min-height: 2.35rem;
+  margin-bottom: clamp(1.45rem, 4vw, 2.4rem);
+  padding: .45rem .75rem;
+  border: 1px solid var(--mx-line);
+  border-radius: .65rem;
+  color: #b9d4e4;
+  font-size: .82rem;
+  font-weight: 650;
+  text-decoration: none;
+  transition: border-color .18s ease, background .18s ease, color .18s ease;
+}
+.backLink:hover { border-color: #287186; background: #0e2032; color: var(--mx-cyan-bright); }
+.backLink:focus-visible { outline: 3px solid rgb(0 194 203 / 35%); outline-offset: 2px; }
+.backLink > span { color: var(--mx-cyan); font-size: 1.1rem; }
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.65rem;
+}
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  margin: 0 0 .6rem;
+  color: var(--mx-cyan-bright);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.eyebrow > span, .badgeDot {
+  width: .48rem;
+  height: .48rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--mx-cyan);
+  box-shadow: 0 0 12px rgb(0 194 203 / 48%);
+}
+.heading h1 {
+  margin: 0;
+  color: var(--mx-text);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 760;
+  letter-spacing: -.055em;
+  line-height: 1.08;
+}
+.description {
+  max-width: 40rem;
+  margin: .75rem 0 0;
+  color: #a8b8ca;
+  font-size: .98rem;
+  line-height: 1.6;
+}
+.headingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  flex: none;
+  margin-bottom: .25rem;
+  padding: .6rem .8rem;
+  border: 1px solid #1c3b4b;
+  border-radius: 999px;
+  background: #0b202e;
+  color: #bcecf0;
+  font-size: .76rem;
+  font-weight: 650;
+}
+.badgeDot { width: .42rem; height: .42rem; }
+@media (max-width: 620px) {
+  .page { padding-top: 1.1rem; }
+  .heading { align-items: flex-start; flex-direction: column; }
+  .headingBadge { margin-top: -.15rem; }
+}

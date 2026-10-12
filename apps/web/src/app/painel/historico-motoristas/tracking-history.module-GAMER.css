@@ -1,0 +1,26 @@
+.filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin: 22px 0 16px; padding: 16px; border: 1px solid #dce4ee; border-radius: 12px; background: #fff; }
+.filters label { display: grid; gap: 6px; color: #526579; font-size: 12px; font-weight: 650; }
+.filters input, .filters select, .filters button { min-height: 40px; padding: 8px 12px; border: 1px solid #dce4ee; border-radius: 7px; background: #fff; color: #102a43; font: inherit; }
+.filters input { min-width: 160px; }
+.filters select { min-width: 210px; }
+.filters button { cursor: pointer; font-weight: 700; }
+.filters button:disabled { cursor: not-allowed; opacity: .5; }
+.secondary { background: #f8fafc !important; }
+.export { border-color: #087e8b !important; background: #087e8b !important; color: white !important; }
+.success { color: #087e54; font-size: 13px; }
+.stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+.stats article { display: grid; gap: 4px; padding: 16px; border: 1px solid #dce4ee; border-radius: 10px; background: #fff; }
+.stats strong { color: #102a43; font-size: 22px; }
+.stats span { color: #718096; font-size: 12px; }
+.map { height: min(58vh, 540px); min-height: 340px; border: 1px solid #dce4ee; border-radius: 12px; background: #f5f8fb; z-index: 0; }
+.mapError { padding: 10px 12px; border-radius: 8px; background: #fff4e8; color: #8a4700; font-size: 13px; }
+.empty { margin: 12px 0; padding: 28px; border: 1px dashed #b8c5d6; border-radius: 12px; background: #f5f8fb; color: #35445a; }
+.empty p { margin: 8px 0 0; color: #718096; font-size: 13px; }
+.tableWrap { margin-top: 22px; }
+.tableWrap h2 { font-size: 18px; }
+.scroll { overflow: auto; border: 1px solid #dce4ee; border-radius: 10px; background: #fff; }
+.scroll table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+.scroll th, .scroll td { padding: 10px 12px; border-bottom: 1px solid #dce4ee; text-align: left; }
+.scroll th { background: #f5f8fb; color: #526579; }
+.noRows { padding: 22px !important; color: #718096; text-align: center !important; }
+@media (max-width: 700px) { .stats { grid-template-columns: 1fr; } .filters { align-items: stretch; } .filters label, .filters input, .filters select, .filters button { width: 100%; } .map { min-height: 300px; } }

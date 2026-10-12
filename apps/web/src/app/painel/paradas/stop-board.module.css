@@ -1,0 +1,21 @@
+.wrap { margin-top: 24px; color: #162338; }
+.filters { display: flex; align-items: end; gap: 14px; flex-wrap: wrap; margin-bottom: 16px; padding: 16px; border: 1px solid #dce4ee; border-radius: 12px; background: #fff; }
+.filters label { display: grid; gap: 6px; color: #53637a; font-size: 12px; font-weight: 650; }
+.filters input, .filters select { min-height: 40px; min-width: 160px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 7px; background: #fff; color: #17263d; font: inherit; }
+.filters input { width: min(360px, 70vw); }
+.count { margin-left: auto; padding-bottom: 10px; color: #64748b; font-size: 13px; }
+.tableScroll { overflow-x: auto; border: 1px solid #dce4ee; border-radius: 12px; background: white; }
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th { padding: 12px; border-bottom: 1px solid #dce4ee; background: #f5f8fc; color: #526177; text-align: left; white-space: nowrap; }
+.table td { padding: 13px 12px; border-bottom: 1px solid #edf1f6; vertical-align: top; }
+.table tr:last-child td { border-bottom: 0; }
+.table td small, .history small { display: block; margin-top: 4px; color: #69788e; line-height: 1.4; }
+.badge { display: inline-block; padding: 4px 8px; border-radius: 999px; background: #eaf2fb; color: #315478; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.history { min-width: 170px; }
+.history summary { color: #126b78; cursor: pointer; font-weight: 650; }
+.history p { color: #64748b; }
+.event { display: grid; gap: 3px; padding: 10px 0; border-bottom: 1px solid #edf1f6; }
+.event time { color: #64748b; font-size: 11px; }
+.privateNote { max-width: 260px; font-size: 11px; }
+.empty { padding: 28px !important; color: #64748b; text-align: center; }
+@media (max-width: 700px) { .filters { align-items: stretch; } .filters label, .filters select, .filters input { width: 100%; } .count { margin-left: 0; } }

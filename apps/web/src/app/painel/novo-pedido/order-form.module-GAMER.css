@@ -1,0 +1,297 @@
+.form {
+  display: grid;
+  gap: 1rem;
+}
+
+.card {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid #dce4ee;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 0.5rem 1.5rem rgb(15 35 55 / 4%);
+}
+
+.cardHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cardHeading h2 {
+  margin: 0;
+  color: #102a43;
+  font-size: 1.25rem;
+  letter-spacing: -0.025em;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  color: #087e8b;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.counter {
+  flex: none;
+  padding: 0.45rem 0.7rem;
+  border-radius: 999px;
+  background: #f3fbfb;
+  color: #07636b;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.help {
+  margin: -0.5rem 0 1rem;
+  color: #526579;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.field {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+  color: #243b53;
+  font-size: 0.86rem;
+  font-weight: 650;
+}
+
+.field small {
+  color: #718096;
+  font-size: 0.75rem;
+  font-weight: 450;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 2.7rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #dce4ee;
+  border-radius: 0.55rem;
+  background: #fff;
+  color: #102a43;
+  font: inherit;
+  font-size: 0.92rem;
+}
+
+.field textarea {
+  resize: vertical;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.field textarea:focus-visible,
+.checkbox input:focus-visible {
+  outline: 3px solid rgb(0 166 180 / 22%);
+  border-color: #008c98;
+}
+
+.form > .card:first-of-type > .field + .field {
+  margin-top: 1rem;
+}
+
+.list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.volume,
+.stop {
+  display: grid;
+  min-width: 0;
+  gap: 0.9rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid #dce4ee;
+  border-radius: 0.8rem;
+}
+
+.volume legend,
+.stop legend {
+  padding: 0 0.4rem;
+  color: #334e68;
+  font-size: 0.88rem;
+  font-weight: 750;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.pickup,
+.delivery {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+
+.pickup {
+  background: #e8f7f2;
+  color: #17644e;
+}
+
+.delivery {
+  background: #eaf2ff;
+  color: #2456a6;
+}
+
+.packageLinks {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0.85rem;
+  border: 1px solid #dce4ee;
+  border-radius: 0.65rem;
+}
+
+.packageLinks legend {
+  padding: 0 0.35rem;
+  color: #486581;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.checkboxList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #dce4ee;
+  border-radius: 0.5rem;
+  color: #334e68;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+
+.checkbox input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: #008c98;
+}
+
+.addActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.secondaryButton,
+.removeButton,
+.submitButton {
+  min-height: 2.65rem;
+  border-radius: 0.6rem;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.secondaryButton {
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #9bcbd0;
+  background: #f3fbfb;
+  color: #086b75;
+}
+
+.removeButton {
+  justify-self: start;
+  min-height: 2rem;
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: #8d2630;
+  font-size: 0.8rem;
+}
+
+.removeButton:disabled {
+  color: #526579;
+  cursor: not-allowed;
+}
+
+.error {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #f1b7bb;
+  border-radius: 0.65rem;
+  background: #fff3f3;
+  color: #8d2630;
+  font-size: 0.9rem;
+}
+
+.submitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.submitRow p {
+  max-width: 30rem;
+  margin: 0;
+  color: #526579;
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.submitButton {
+  flex: none;
+  padding: 0.75rem 1rem;
+  border: 1px solid #087f8c;
+  background: #087f8c;
+  color: #fff;
+}
+
+.submitButton:disabled {
+  border-color: #9aa9b7;
+  background: #9aa9b7;
+  cursor: wait;
+}
+
+.secondaryButton:focus-visible,
+.removeButton:focus-visible,
+.submitButton:focus-visible {
+  outline: 3px solid rgb(0 166 180 / 24%);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cardHeading,
+  .submitRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .submitButton {
+    width: 100%;
+  }
+}
+
+.coordinateHelp { margin: 0 0 .55rem; color: #334e68; font-size: .84rem; font-weight: 700; }
+.coordinateHelp small { color: #718096; font-size: .75rem; font-weight: 450; }
+.coordinateLink { display: inline-block; margin-top: .55rem; color: #087e8b; font-size: .82rem; font-weight: 700; text-decoration: none; }
+.coordinateLink:hover { text-decoration: underline; }
+

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/eas.json",
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}

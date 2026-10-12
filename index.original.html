@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MalhaX — Inteligência Logística & Tomada de Decisão</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070E1A;
+      --bg-card: #0F1B2E;
+      --bg-card-hover: #16263F;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --primary: #0070F3;
+      --cyan: #00C2CB;
+      --cyan-glow: rgba(0, 194, 203, 0.25);
+      --text-main: #FFFFFF;
+      --text-muted: #94A3B8;
+      --text-sub: #CBD5E1;
+      --success: #10B981;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--primary) 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px var(--cyan-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(0, 194, 203, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--cyan);
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(7, 14, 26, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .nav-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 80px;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title span {
+      color: var(--cyan);
+    }
+
+    .brand-subtitle {
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: -3px;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 32px;
+    }
+
+    nav a {
+      color: var(--text-sub);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    nav a:hover {
+      color: var(--cyan);
+    }
+
+    .hero {
+      padding: 160px 0 100px;
+      position: relative;
+    }
+
+    .hero-content {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      align-items: center;
+      gap: 60px;
+    }
+
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0, 194, 203, 0.1);
+      border: 1px solid rgba(0, 194, 203, 0.3);
+      padding: 6px 14px;
+      border-radius: 100px;
+      color: var(--cyan);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: 3.4rem;
+      line-height: 1.15;
+      font-weight: 800;
+      margin-bottom: 24px;
+      letter-spacing: -1px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, #FFF 20%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      max-width: 540px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .app-card-preview {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 32px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .app-icon-wrap {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(145deg, #0d223f, #071526);
+      border: 1px solid rgba(0, 194, 203, 0.4);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 20px rgba(0, 194, 203, 0.2);
+    }
+
+    .card-metric {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 12px;
+      padding: 16px;
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .features {
+      padding: 100px 0;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .section-title {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 60px;
+    }
+
+    .section-title h2 {
+      font-size: 2.3rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      background: var(--bg-card-hover);
+      border-color: rgba(0, 194, 203, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      margin: 20px 0 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 50px 0 30px;
+      background: #040810;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .hero p {
+        margin: 0 auto 36px;
+      }
+      .hero-actions {
+        justify-content: center;
+      }
+      nav ul {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container nav-wrapper">
+      <a href="#" class="brand-logo">
+        <svg width="44" height="44" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 82V36H24V82H14Z" fill="#0C6BE5"/>
+          <path d="M30 82V26H40V82H30Z" fill="#13D0D5"/>
+          <path d="M46 82V18H56V82H46Z" fill="#00E5FF"/>
+          <path d="M57 18L80 8L74 28L57 18Z" fill="#00E5FF"/>
+          <path d="M18 62L45 34L62 36L78 18" stroke="#00E5FF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="19" cy="62" r="4" fill="#FFFFFF"/>
+          <circle cx="44" cy="34" r="4" fill="#FFFFFF"/>
+          <circle cx="62" cy="36" r="4" fill="#FFFFFF"/>
+          <circle cx="78" cy="18" r="4" fill="#FFFFFF"/>
+          <path d="M14 82V90H82" stroke="#1EE3D3" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-title">Malha<span>X</span></div>
+          <div class="brand-subtitle">Logística e Tecnologia</div>
+        </div>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="#solucoes">Soluções</a></li>
+          <li><a href="#dados">Decisão & Dados</a></li>
+          <li><a href="#app">Aplicativo</a></li>
+        </ul>
+      </nav>
+      <a href="#app" class="btn btn-primary">Acessar App</a>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container hero-content">
+      <div>
+        <div class="tag-badge">⚡ Plataforma Orientada a Decisão</div>
+        <h1>Logística orientada por <span>dados reais</span> e alta tecnologia.</h1>
+        <p>A MalhaX transforma a complexidade do transporte e da armazenagem em rotas precisas, automação de processos e decisões inteligentes em segundos.</p>
+        <div class="hero-actions">
+          <a href="#app" class="btn btn-primary">Baixar Aplicativo</a>
+          <a href="#solucoes" class="btn btn-secondary">Conhecer Soluções</a>
+        </div>
+      </div>
+
+      <div class="app-card-preview" id="app">
+        <div class="app-icon-wrap">
+          <svg width="46" height="46" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Círculos de Malha Global -->
+            <circle cx="50" cy="50" r="38" stroke="#00C2CB" stroke-width="2.5" stroke-dasharray="5 4" opacity="0.6"/>
+            <ellipse cx="50" cy="50" rx="38" ry="16" stroke="#0070F3" stroke-width="2" opacity="0.5"/>
+            <ellipse cx="50" cy="50" rx="16" ry="38" stroke="#0070F3" stroke-width="2" opacity="0.5"/>
+            <!-- O "X" Central de Alta Precisão -->
+            <path d="M30 30L70 70M70 30L30 70" stroke="#00E5FF" stroke-width="8" stroke-linecap="round"/>
+            <!-- Pontos de Dados Conectados -->
+            <circle cx="30" cy="30" r="4.5" fill="#FFFFFF"/>
+            <circle cx="70" cy="70" r="4.5" fill="#00E5FF"/>
+            <circle cx="70" cy="30" r="4.5" fill="#0070F3"/>
+            <circle cx="30" cy="70" r="4.5" fill="#00E5FF"/>
+          </svg>
+        </div>
+        <h3>MalhaX Mobile</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Operação em tempo real para frotas e conferentes.</p>
+
+        <div class="card-metric">
+          <span style="font-size: 0.85rem; color: var(--text-sub);">Precisão de Rota:</span>
+          <strong style="color: var(--cyan);">99.4%</strong>
+        </div>
+        <div class="card-metric">
+          <span style="font-size: 0.85rem; color: var(--text-sub);">Tempo de Decisão:</span>
+          <strong style="color: var(--success);">-35% em fila</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="solucoes">
+    <div class="container">
+      <div class="section-title">
+        <h2>Tecnologia que impulsiona o fluxo</h2>
+        <p>Conectamos o transporte rodoviário à inteligência de estoque em um único ecossistema ágil.</p>
+      </div>
+      <div class="grid-3">
+        <div class="feature-card">
+          <h3 style="color: var(--cyan);">01. Malha Logística Inteligente</h3>
+          <p>Roteirização dinâmica com cálculo de tráfego, pedágios e pontos críticos para diminuir o tempo de trânsito da carga.</p>
+        </div>
+        <div class="feature-card">
+          <h3 style="color: var(--primary);">02. Tomada de Decisão em Dados</h3>
+          <p>Painéis analíticos e alertas preditivos que indicam gargalos antes que eles se transformem em atrasos e custos extras.</p>
+        </div>
+        <div class="feature-card">
+          <h3 style="color: var(--success);">03. Gestão de Estoque (WMS)</h3>
+          <p>Conferência ágil via QR Code e código de barras, monitoramento volumétrico e reabastecimento inteligente integrado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container footer-content">
+      <div class="brand-text">
+        <div class="brand-title" style="font-size: 1.1rem;">Malha<span style="color: var(--cyan);">X</span></div>
+        <div class="brand-subtitle">Inteligência em Movimento</div>
+      </div>
+      <div>© 2026 MalhaX Logística e Tecnologia. Todos os direitos reservados.</div>
+    </div>
+  </footer>
+
+</body>
+</html>

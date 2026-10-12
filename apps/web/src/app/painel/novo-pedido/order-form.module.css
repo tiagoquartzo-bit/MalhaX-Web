@@ -1,0 +1,49 @@
+.form { display: grid; gap: 1rem; color: #f3f7fb; font-family: Inter, "Segoe UI", system-ui, sans-serif; }
+.card { padding: clamp(1rem, 3vw, 1.5rem); border: 1px solid #20344a; border-radius: 1rem; background: linear-gradient(145deg, #0d1b2d, #0a1626 75%); box-shadow: 0 16px 36px rgb(0 0 0 / 14%); }
+.cardHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+.cardHeading h2 { margin: 0; color: #f3f7fb; font-size: 1.2rem; font-weight: 720; letter-spacing: -.035em; }
+.eyebrow { margin: 0 0 .3rem; color: #00d2dc; font-size: .66rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+.counter { flex: none; padding: .42rem .68rem; border: 1px solid #1c4552; border-radius: 999px; background: #102b38; color: #8cebf0; font-size: .75rem; font-weight: 700; }
+.help { margin: -.45rem 0 1rem; color: #9aabc0; font-size: .84rem; line-height: 1.6; }
+.field { display: grid; min-width: 0; gap: .42rem; color: #dbe6f1; font-size: .83rem; font-weight: 650; }
+.field small { color: #8296ad; font-size: .74rem; font-weight: 450; }
+.field input, .field select, .field textarea { width: 100%; min-height: 2.75rem; padding: .68rem .78rem; border: 1px solid #2a4058; border-radius: .62rem; background: #081321; color: #f3f7fb; font: inherit; font-size: .9rem; color-scheme: dark; transition: border-color .16s ease, box-shadow .16s ease, background .16s ease; }
+.field input::placeholder, .field textarea::placeholder { color: #71849b; opacity: 1; }
+.field input:hover, .field select:hover, .field textarea:hover { border-color: #3b5a73; }
+.field input:focus-visible, .field select:focus-visible, .field textarea:focus-visible, .checkbox input:focus-visible { outline: 0; border-color: #00c2cb; box-shadow: 0 0 0 3px rgb(0 194 203 / 17%); background: #0a1929; }
+.form > .card:first-of-type > .field + .field { margin-top: 1rem; }
+.list { display: grid; gap: .85rem; }
+.volume, .stop { display: grid; min-width: 0; gap: .9rem; margin: 0; padding: 1rem; border: 1px solid #20354a; border-radius: .82rem; background: rgb(7 16 28 / 58%); }
+.volume legend, .stop legend { padding: 0 .4rem; color: #e2edf6; font-size: .84rem; font-weight: 750; }
+.grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; }
+.pickup, .delivery { display: inline-flex; align-items: center; min-height: 1.55rem; padding: .25rem .62rem; border: 1px solid #20565a; border-radius: 999px; background: #102b31; color: #7ce6df; font-size: .76rem; font-weight: 700; }
+.delivery { border-color: #234c68; background: #102338; color: #8bc9f4; }
+.packageLinks { display: grid; gap: .65rem; margin: 0; padding: .85rem; border: 1px solid #20354a; border-radius: .7rem; background: #091625; }
+.packageLinks legend { padding: 0 .35rem; color: #a9bfd1; font-size: .78rem; font-weight: 700; }
+.checkboxList { display: flex; flex-wrap: wrap; gap: .5rem; }
+.checkbox { display: inline-flex; align-items: center; gap: .48rem; max-width: 100%; padding: .48rem .62rem; border: 1px solid #243b52; border-radius: .55rem; background: #0c1a2a; color: #cbd8e5; font-size: .8rem; overflow-wrap: anywhere; }
+.checkbox input { width: 1rem; height: 1rem; accent-color: #00c2cb; }
+.addActions { display: flex; flex-wrap: wrap; gap: .65rem; margin-top: 1rem; }
+.secondaryButton, .removeButton, .submitButton { min-height: 2.65rem; border-radius: .62rem; font: inherit; font-weight: 700; cursor: pointer; transition: transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease; }
+.secondaryButton { padding: .62rem .9rem; border: 1px solid #24717a; background: #0b2632; color: #76e6ed; }
+.secondaryButton:hover { border-color: #00c2cb; background: #103341; }
+.removeButton { justify-self: start; min-height: 2rem; padding: .35rem 0; border: 0; background: transparent; color: #ff9a9f; font-size: .8rem; }
+.removeButton:hover:not(:disabled) { color: #ffc0c3; text-decoration: underline; }
+.removeButton:disabled { color: #68798d; cursor: not-allowed; }
+.error { margin: 0; padding: .82rem 1rem; border: 1px solid #713942; border-radius: .68rem; background: #2b1720; color: #ffc2c6; font-size: .88rem; line-height: 1.5; }
+.submitRow { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .45rem 0 1rem; }
+.submitRow p { max-width: 31rem; margin: 0; color: #96a9bd; font-size: .82rem; line-height: 1.55; }
+.submitButton { flex: none; min-height: 2.9rem; padding: .78rem 1.1rem; border: 1px solid #00c2cb; background: #00c2cb; color: #061522; box-shadow: 0 7px 20px rgb(0 194 203 / 14%); }
+.submitButton:hover:not(:disabled) { transform: translateY(-1px); border-color: #36e4ea; background: #23d0d8; box-shadow: 0 10px 24px rgb(0 194 203 / 23%); }
+.submitButton:disabled { border-color: #36505e; background: #263c4d; color: #8ea1b2; cursor: wait; box-shadow: none; }
+.secondaryButton:focus-visible, .removeButton:focus-visible, .submitButton:focus-visible { outline: 3px solid rgb(0 194 203 / 38%); outline-offset: 2px; }
+.coordinateHelp { margin: 0 0 .55rem; color: #d7e4f0; font-size: .82rem; font-weight: 700; line-height: 1.5; }
+.coordinateHelp small { display: block; margin-top: .15rem; color: #91a5ba; font-size: .75rem; font-weight: 450; }
+.coordinateConfirmed { color: #75e0bd; font-size: .74rem; font-weight: 750; }
+.coordinateMissing { color: #f0c574; font-size: .74rem; font-weight: 750; }
+.mapNotice, .mapSuccess { margin: 0 0 1rem; padding: .78rem .9rem; border-radius: .68rem; font-size: .8rem; line-height: 1.55; }
+.mapNotice { border: 1px solid #6c542b; background: #292317; color: #f3d99d; }
+.mapSuccess { border: 1px solid #205a50; background: #102922; color: #9de5c8; }
+.coordinateLink { display: inline-block; margin-top: .6rem; color: #60e4ed; font-size: .8rem; font-weight: 700; text-decoration: none; }
+.coordinateLink:hover { color: #a4f7fb; text-decoration: underline; }
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .cardHeading, .submitRow { align-items: flex-start; flex-direction: column; } .submitButton { width: 100%; } .volume, .stop { padding: .85rem; } }
