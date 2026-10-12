@@ -58,7 +58,15 @@ export async function updateSession(request: NextRequest): Promise<NextResponse>
   // Prévia em desenvolvimento usa dados fictícios e deve continuar acessível
   // para revisão visual, mesmo quando o Supabase está configurado.
   if (!user && !isPublic && !isDevPreview) return redirectTo("/login");
-  if (user && pathname === "/login") return redirectTo("/painel");
+  if (user && pathname === "/login") {
+    const { data: roleRows } = await supabase
+      .from("organization_member_roles")
+      .select("role")
+      .eq("user_id", user.id);
+    const roles = (roleRows ?? []).map(({ role }) => String(role));
+    const isDriverOnly = roles.includes("driver") && !roles.some((role) => ["admin", "manager", "dispatcher", "support", "finance"].includes(role));
+    return redirectTo(isDriverOnly ? "/motorista" : "/acesso-indisponivel");
+  }
 
   return response;
 }

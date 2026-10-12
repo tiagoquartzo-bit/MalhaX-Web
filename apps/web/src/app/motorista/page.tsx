@@ -21,8 +21,8 @@ export default async function DriverAccessPage() {
   if (error) redirect("/login");
 
   const roles = (roleRows ?? []).map((row) => row.role as string);
-  if (!roles.includes("driver")) redirect("/painel");
-  if (roles.some((role) => OPS_ROLES.includes(role))) redirect("/painel");
+  if (!roles.includes("driver")) redirect("/acesso-indisponivel");
+  if (roles.some((role) => OPS_ROLES.includes(role))) redirect("/acesso-indisponivel");
 
   return (
     <main style={{ minHeight: "100vh", background: "#070e1a", color: "#f5f8fc", display: "grid", placeItems: "center", padding: 24 }}>

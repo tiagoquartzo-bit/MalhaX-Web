@@ -22,5 +22,5 @@ export async function setInitialPassword(_prev: PasswordState, formData: FormDat
 
   const { error } = await supabase.auth.updateUser({ password });
   if (error) return { error: "Não foi possível salvar a senha. Tente novamente." };
-  redirect("/painel");
+  redirect("/acesso-indisponivel");
 }
