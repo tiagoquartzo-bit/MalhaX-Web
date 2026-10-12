@@ -26,7 +26,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
     return { error: "E-mail ou senha inválidos." };
   }
 
-  redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/painel");
+  redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/controle");
 }
 
 export async function signOut(): Promise<void> {
