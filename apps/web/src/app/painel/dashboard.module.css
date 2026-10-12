@@ -36,6 +36,12 @@
 .metric > div > span { color: #a7b8cb; font-size: .72rem; }
 .metric > small { margin-left: auto; color: #71859b; font-size: .65rem; }
 .metric > a { margin-left: auto; color: #69e3e8; font-size: .7rem; text-decoration: none; }
+.metricAction { display: flex; min-width: 0; align-items: center; gap: .8rem; padding: .95rem 1rem; border: 1px solid var(--line); border-radius: .8rem; background: linear-gradient(145deg, rgb(14 29 49 / 96%), rgb(9 22 38 / 96%)); color: var(--text); text-decoration: none; transition: border-color .16s ease, background .16s ease; }
+.metricAction:hover { border-color: #287186; background: #0d2032; }
+.metricAction > div { display: grid; gap: .2rem; }
+.metricAction > div strong { font-size: .82rem; }
+.metricAction > div span { color: #a7b8cb; font-size: .7rem; }
+.metricActionArrow { margin-left: auto; color: #69e3e8; }
 .sections { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .9fr); gap: .85rem; max-width: 1440px; margin: 0 auto; }
 .panel { min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: .85rem; background: rgb(11 23 40 / 92%); }
 .panelHeading { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.15rem; border-bottom: 1px solid rgb(32 52 74 / 75%); }

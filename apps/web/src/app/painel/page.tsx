@@ -88,13 +88,13 @@ export default async function PainelPage() {
       <nav className={styles.shortcuts} aria-label="Atalhos operacionais">
         <Link href="/painel/paradas"><span className={styles.shortcutIcon}>↔</span><span><strong>Coletas e entregas</strong><small>Consulte e ajuste as paradas</small></span><span className={styles.arrow}>↗</span></Link>
         <Link href="/painel/despacho"><span className={styles.shortcutIcon}>⇄</span><span><strong>Despacho de viagens</strong><small>Organize pedidos em viagens</small></span><span className={styles.arrow}>↗</span></Link>
-        <Link href="/painel/acompanhamento"><span className={styles.shortcutIcon}>⌖</span><span><strong>Acompanhamento ao vivo</strong><small>Veja a operação em andamento</small></span><span className={styles.arrow}>↗</span></Link>
+        <Link href="/painel/ao-vivo"><span className={styles.shortcutIcon}>⌖</span><span><strong>Acompanhamento ao vivo</strong><small>Veja a operação em andamento</small></span><span className={styles.arrow}>↗</span></Link>
       </nav>
 
       <section className={styles.metrics} aria-label="Resumo da operação">
         <article className={styles.metric}><span className={styles.metricIcon}>▤</span><div><strong>{(pedidos ?? []).length}</strong><span>Pedidos recentes</span></div><small>últimos 50</small></article>
         <article className={styles.metric}><span className={styles.metricIcon}>⌁</span><div><strong>{(viagens ?? []).length}</strong><span>Viagens recentes</span></div><small>últimas 50</small></article>
-        <article className={styles.metric}><span className={styles.metricIcon}>↔</span><div><strong>—</strong><span>Paradas pendentes</span></div><Link href="/painel/paradas">Ver paradas</Link></article>
+        <Link className={styles.metricAction} href="/painel/transbordos"><span className={styles.metricIcon}>⇄</span><div><strong>Transbordos</strong><span>Transferência entre viagens</span></div><span className={styles.metricActionArrow}>↗</span></Link>
       </section>
 
       <div className={styles.sections}>
