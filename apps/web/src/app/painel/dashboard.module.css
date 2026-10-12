@@ -6,7 +6,7 @@
   --text: #eef5fc;
   --muted: #9aabc0;
   --cyan: #00c2cb;
-  min-height: calc(100vh - 40px);
+  min-height: 100vh;
   margin: -20px;
   padding: clamp(1.25rem, 4vw, 3rem) clamp(1rem, 4vw, 3.5rem) 1.25rem;
   color: var(--text);
@@ -67,5 +67,5 @@
 .restricted h1 { margin: 0; }
 .restricted > p:not(.eyebrow) { color: var(--muted); line-height: 1.6; }
 @media (max-width: 1050px) { .sections { grid-template-columns: 1fr; } }
-@media (max-width: 760px) { .dashboard { min-height: calc(100vh - 24px); margin: -12px; padding: 1.2rem .85rem 1rem; } .hero { align-items: flex-start; flex-direction: column; } .shortcuts { grid-template-columns: 1fr; } .metrics { grid-template-columns: 1fr; } .metric > small { margin-left: auto; } }
+@media (max-width: 760px) { .dashboard { min-height: 100vh; margin: -12px; padding: 1.2rem .85rem 1rem; } .hero { align-items: flex-start; flex-direction: column; } .shortcuts { grid-template-columns: 1fr; } .metrics { grid-template-columns: 1fr; } .metric > small { margin-left: auto; } }
 @media (max-width: 520px) { .panelHeading { align-items: flex-start; flex-direction: column; } .footer { flex-direction: column; } }
