@@ -28,14 +28,14 @@ export function BackofficeNav(props: Props) {
   const controlHref = "/painel";
   const controlActive = pathname === controlHref;
   return <aside className={styles.sidebar}>
-    <Link href={controlHref} className={styles.brand}><span className={styles.brandMark}>X</span><span><strong>MalhaX</strong><small>BACKOFFICE</small></span></Link>
+    <Link href={controlHref} className={styles.brand}><span className={styles.brandMark}>X</span><span><strong>MalhaX</strong><small>GESTOR</small></span></Link>
     <div className={styles.account}><span className={styles.accountDot} />{props.name}<small>Ambiente da empresa</small></div>
-    <nav aria-label="Navegação do backoffice" className={styles.nav}>
+    <nav aria-label="Navegação do gestor" className={styles.nav}>
       <Link href={controlHref} aria-current={controlActive ? "page" : undefined} className={`${styles.navLink} ${controlActive ? styles.active : ""}`}><span aria-hidden="true">▦</span>Visão de controle</Link>
       {groups.map((group) => { const visibleItems = group.items.filter(({ key }) => props[key]); return visibleItems.length ? <section className={styles.navGroup} key={group.title}><p>{group.title}</p>{visibleItems.map(({ label, href, icon }) => <Link aria-current={pathname === href || pathname.startsWith(`${href}/`) ? "page" : undefined} className={`${styles.navLink} ${pathname === href || pathname.startsWith(`${href}/`) ? styles.active : ""}`} href={href} key={href}><span aria-hidden="true">{icon}</span>{label}</Link>)}</section> : null; })}
     </nav>
     {props.canDispatch ? <Link href="/painel/novo-pedido" className={styles.newOrder}>＋ Novo pedido</Link> : null}
-    <form action={signOut}><button className={styles.signOut} type="submit">Sair do backoffice</button></form>
+    <form action={signOut}><button className={styles.signOut} type="submit">Sair da conta</button></form>
   </aside>;
 }
 
