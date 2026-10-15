@@ -138,6 +138,11 @@ export async function criarPedido(
     if (pickupCount !== 1 || deliveryCount !== 1) {
       return { error: `Vincule o volume ${packageIndex} a exatamente uma coleta e uma entrega para montar a sequência da viagem.` };
     }
+    const pickupPosition = tarefas.findIndex((parada) => parada.stop_type === "pickup" && parada.package_indexes.includes(packageIndex));
+    const deliveryPosition = tarefas.findIndex((parada) => parada.stop_type === "delivery" && parada.package_indexes.includes(packageIndex));
+    if (pickupPosition >= deliveryPosition) {
+      return { error: `A coleta do volume ${packageIndex} precisa vir antes da entrega na sequência da viagem.` };
+    }
   }
 
   const stopsToGeocode = tarefas

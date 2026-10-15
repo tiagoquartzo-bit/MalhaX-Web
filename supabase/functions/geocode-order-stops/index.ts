@@ -24,6 +24,16 @@ type GeocodeFeature = {
   properties?: Record<string, unknown>;
 };
 
+const BRAZILIAN_STATES: Record<string, string> = {
+  acre: "AC", alagoas: "AL", amapá: "AP", amapa: "AP", amazonas: "AM", bahia: "BA",
+  "ceará": "CE", ceara: "CE", "distrito federal": "DF", "espírito santo": "ES", "espirito santo": "ES",
+  goiás: "GO", goias: "GO", maranhão: "MA", maranhao: "MA", "mato grosso": "MT",
+  "mato grosso do sul": "MS", "minas gerais": "MG", pará: "PA", para: "PA", paraíba: "PB", paraiba: "PB",
+  paraná: "PR", parana: "PR", pernambuco: "PE", piauí: "PI", piaui: "PI", "rio de janeiro": "RJ",
+  "rio grande do norte": "RN", "rio grande do sul": "RS", rondônia: "RO", rondonia: "RO", roraima: "RR",
+  "santa catarina": "SC", "são paulo": "SP", "sao paulo": "SP", sergipe: "SE", tocantins: "TO",
+};
+
 function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
@@ -134,6 +144,65 @@ async function geocodeAddress(address: AddressInput, apiKey: string) {
   return { point: best ? { latitude: best.latitude, longitude: best.longitude } : null } as const;
 }
 
+function stateAbbreviation(value: unknown): string {
+  const text = readText(value, 48);
+  if (/^[A-Z]{2}$/i.test(text)) return text.toLocaleUpperCase("en-US");
+  return BRAZILIAN_STATES[normalized(text)] ?? "";
+}
+
+async function suggestAddresses(query: string, apiKey: string) {
+  const url = new URL("https://api.heigit.org/pelias/v1/search");
+  url.searchParams.set("text", query + ", Brasil");
+  url.searchParams.set("size", "8");
+  url.searchParams.set("boundary.country", "BRA");
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: { Authorization: apiKey, Accept: "application/json" },
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!response.ok) return { providerError: response.status } as const;
+
+  const result = await response.json();
+  const features = Array.isArray(result?.features) ? result.features as GeocodeFeature[] : [];
+  const suggestions = features.flatMap((feature, index) => {
+    if (feature.geometry?.type !== "Point" || !Array.isArray(feature.geometry.coordinates)) return [];
+    const [longitude, latitude] = feature.geometry.coordinates.map(Number);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude) || Math.abs(latitude) > 90 || Math.abs(longitude) > 180) return [];
+
+    const properties = feature.properties ?? {};
+    const country = readText(properties.country_a, 8).toLocaleUpperCase("en-US");
+    if (country && country !== "BRA" && country !== "BR") return [];
+    const street = readText(properties.street, 180);
+    const houseNumber = readText(properties.housenumber, 24);
+    const name = readText(properties.name, 120);
+    const label = readText(properties.label, 280);
+    const addressLine = street
+      ? street + (houseNumber ? ", " + houseNumber : "")
+      : name || label.split(",")[0] || "";
+    const city = readText(properties.locality, 100) || readText(properties.localadmin, 100);
+    const state = stateAbbreviation(properties.region_a) || stateAbbreviation(properties.region);
+    if (!addressLine || !city || !state) return [];
+
+    return [{
+      id: readText(properties.gid, 160) || String(index) + "-" + latitude.toFixed(5) + "," + longitude.toFixed(5),
+      label: label || [addressLine, properties.neighbourhood, city, state].filter(Boolean).join(", "),
+      address_label: name || addressLine,
+      address_line: addressLine,
+      district: readText(properties.neighbourhood, 100),
+      city,
+      state,
+      postal_code: readText(properties.postalcode, 12),
+      latitude,
+      longitude,
+      confidence: Number(properties.confidence) || 0,
+    }];
+  }).sort((a, b) => b.confidence - a.confidence).slice(0, 5)
+    .map(({ confidence: _confidence, ...suggestion }) => suggestion);
+
+  return { suggestions } as const;
+}
+
 Deno.serve(async (request: Request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") return json(405, { error: "method_not_allowed" });
@@ -146,7 +215,7 @@ Deno.serve(async (request: Request) => {
   const orsKey = Deno.env.get("OPENROUTESERVICE_API_KEY");
   if (!supabaseUrl || !anonKey || !orsKey) return json(503, { error: "geocoding_service_not_configured" });
 
-  let body: { stops?: unknown };
+  let body: { stops?: unknown; suggestion_query?: unknown };
   try {
     const rawBody = await request.text();
     if (rawBody.length > 64_000) return json(413, { error: "request_too_large" });
@@ -155,15 +224,23 @@ Deno.serve(async (request: Request) => {
     return json(400, { error: "invalid_json" });
   }
   if (!body || typeof body !== "object" || Array.isArray(body)) return json(400, { error: "invalid_request" });
-  if (!Array.isArray(body.stops) || body.stops.length === 0 || body.stops.length > MAX_STOPS) {
-    return json(400, { error: "invalid_stop_list" });
+  const isSuggestionRequest = body.suggestion_query !== undefined;
+  if (isSuggestionRequest && (typeof body.suggestion_query !== "string" || body.suggestion_query.trim().length < 5 || body.suggestion_query.length > 240)) {
+    return json(400, { error: "invalid_suggestion_query" });
   }
+  const suggestionQuery = readText(body.suggestion_query, 240);
 
-  const addresses = body.stops.map(validAddress);
-  if (addresses.some((address) => address === null)) return json(400, { error: "invalid_stop_address" });
-  const validAddresses = addresses as AddressInput[];
-  if (new Set(validAddresses.map((address) => address.stop_index)).size !== validAddresses.length) {
-    return json(400, { error: "duplicate_stop_index" });
+  let validAddresses: AddressInput[] = [];
+  if (!isSuggestionRequest) {
+    if (!Array.isArray(body.stops) || body.stops.length === 0 || body.stops.length > MAX_STOPS) {
+      return json(400, { error: "invalid_stop_list" });
+    }
+    const addresses = body.stops.map(validAddress);
+    if (addresses.some((address) => address === null)) return json(400, { error: "invalid_stop_address" });
+    validAddresses = addresses as AddressInput[];
+    if (new Set(validAddresses.map((address) => address.stop_index)).size !== validAddresses.length) {
+      return json(400, { error: "duplicate_stop_index" });
+    }
   }
 
   const caller = createClient(supabaseUrl, anonKey, {
@@ -178,6 +255,20 @@ Deno.serve(async (request: Request) => {
     .eq("user_id", auth.user.id);
   if (roleError || !roles?.some(({ role }) => ORDER_ROLES.has(role))) {
     return json(403, { error: "order_creation_role_required" });
+  }
+
+  if (isSuggestionRequest) {
+    try {
+      const result = await suggestAddresses(suggestionQuery, orsKey);
+      if ("providerError" in result) {
+        return json(result.providerError === 429 ? 429 : 502, {
+          error: result.providerError === 429 ? "geocoding_rate_limit" : "geocoding_provider_unavailable",
+        });
+      }
+      return json(200, result);
+    } catch {
+      return json(502, { error: "geocoding_provider_unavailable" });
+    }
   }
 
   const results: Array<Record<string, unknown>> = [];
