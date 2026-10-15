@@ -71,7 +71,7 @@ export default function LoginPage() {
           </form>
 
           <div className={styles.formDivider}><span /> <small>ACESSO RESTRITO</small> <span /></div>
-          <p className={styles.accessNote}>Sua conta precisa estar ativa e vinculada à empresa. Se não conseguir entrar, peça ajuda ao administrador do seu ambiente.</p>
+          <p className={styles.accessNote}>Gestores e equipe operacional acessam o Backoffice. Motoristas usam o app MalhaX. Se não conseguir entrar, peça ajuda ao administrador da empresa.</p>
         </section>
       </div>
 

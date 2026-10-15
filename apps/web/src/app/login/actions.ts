@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "../../lib/supabase/server";
+import { hasBackofficeAccess, getOrganizationAccess } from "../../lib/auth/organization-access";
 
 export type LoginState = { error: string | null };
 
@@ -26,7 +27,28 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
     return { error: "E-mail ou senha inválidos." };
   }
 
-  redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/controle");
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    await supabase.auth.signOut();
+    return { error: "Não foi possível confirmar sua sessão. Entre novamente." };
+  }
+
+  const access = await getOrganizationAccess(supabase, user.id);
+  if (!access.loaded || !access.organizationId) {
+    await supabase.auth.signOut();
+    return { error: "Não foi possível validar o vínculo da sua conta com a empresa. Tente novamente ou peça ajuda ao administrador." };
+  }
+
+  if (hasBackofficeAccess(access.roles)) {
+    redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/controle");
+  }
+
+  if (access.roles.includes("driver")) {
+    redirect("/acesso-motorista");
+  }
+
+  await supabase.auth.signOut();
+  return { error: "Sua conta ainda não tem um perfil ativo na empresa. Peça ao administrador para conferir seu acesso." };
 }
 
 export async function signOut(): Promise<void> {
