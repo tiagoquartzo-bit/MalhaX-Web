@@ -89,6 +89,27 @@ export async function despacharViagem(
   }
   if (new Set(stopIds).size !== stopIds.length) return { error: "A sequência contém uma parada repetida." };
 
+  const { data: vinculosDosVolumes, error: erroDosVinculos } = await supabase
+    .from("order_stop_packages")
+    .select("order_stop_id, package_id, expected_action")
+    .in("order_stop_id", stopIds);
+  if (erroDosVinculos) return { error: "Não foi possível conferir os volumes ligados às paradas. Atualize e tente novamente." };
+  const posicaoDaParada = new Map((stopIds as string[]).map((id, index) => [id, index]));
+  const acoesPorVolume = new Map<string, { coletas: number[]; entregas: number[] }>();
+  for (const vinculo of vinculosDosVolumes ?? []) {
+    const posicao = posicaoDaParada.get(vinculo.order_stop_id);
+    if (posicao === undefined) continue;
+    const acoes = acoesPorVolume.get(vinculo.package_id) ?? { coletas: [], entregas: [] };
+    if (vinculo.expected_action === "load") acoes.coletas.push(posicao);
+    else acoes.entregas.push(posicao);
+    acoesPorVolume.set(vinculo.package_id, acoes);
+  }
+  for (const acoes of acoesPorVolume.values()) {
+    if (acoes.coletas.length && acoes.entregas.length && Math.min(...acoes.coletas) > Math.min(...acoes.entregas)) {
+      return { error: "A sequência está invertida: coloque a coleta do volume antes da entrega correspondente." };
+    }
+  }
+
   const plannedAt = dataLocalDeSaoPauloParaIso(plannedLocal);
   if (!plannedAt) {
     return { error: "Informe um horário previsto válido." };

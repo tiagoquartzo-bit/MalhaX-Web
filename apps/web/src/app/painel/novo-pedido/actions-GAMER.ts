@@ -80,8 +80,8 @@ export async function criarPedido(
     const description = texto(volume.description, 200);
     const pesoTexto = texto(volume.weight_kg, 20).replace(",", ".");
     const peso = pesoTexto === "" ? null : Number(pesoTexto);
-    if (peso !== null && (!Number.isFinite(peso) || peso < 0)) {
-      return { error: "Informe um peso válido para cada volume." };
+    if (peso === null || !Number.isFinite(peso) || peso <= 0) {
+      return { error: `Informe o peso em kg do volume ${pacotes.length + 1}.` };
     }
     pacotes.push({ description: description || null, weight_kg: peso });
   }
@@ -131,6 +131,74 @@ export async function criarPedido(
   );
   if (volumeSemTarefa) return { error: "Associe cada volume a pelo menos uma coleta ou entrega." };
 
+  for (let indice = 0; indice < pacotes.length; indice += 1) {
+    const packageIndex = indice + 1;
+    const pickupCount = tarefas.filter((parada) => parada.stop_type === "pickup" && parada.package_indexes.includes(packageIndex)).length;
+    const deliveryCount = tarefas.filter((parada) => parada.stop_type === "delivery" && parada.package_indexes.includes(packageIndex)).length;
+    if (pickupCount !== 1 || deliveryCount !== 1) {
+      return { error: `Vincule o volume ${packageIndex} a exatamente uma coleta e uma entrega para montar a sequência da viagem.` };
+    }
+  }
+
+  const stopsToGeocode = tarefas
+    .map((parada, index) => ({ parada, stop_index: index + 1 }))
+    .filter(({ parada }) => parada.latitude === null && parada.longitude === null);
+
+  if (stopsToGeocode.some(({ parada }) => !parada.city || !parada.state)) {
+    return { error: "Para localizar a parada pelo endereço, informe cidade e UF. Você também pode marcar o ponto no mapa." };
+  }
+
+  if (stopsToGeocode.length > 0) {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session?.access_token) return { error: "Sua sessão expirou. Entre novamente." };
+
+    let data: { results?: unknown } | null = null;
+    let geocodeError: unknown = null;
+    try {
+      const response = await supabase.functions.invoke("geocode-order-stops", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        body: {
+          stops: stopsToGeocode.map(({ parada, stop_index }) => ({
+            stop_index,
+            address_line: parada.address_line,
+            address_extra: parada.address_extra,
+            district: parada.district,
+            city: parada.city,
+            state: parada.state,
+            postal_code: parada.postal_code,
+          })),
+        },
+      });
+      data = response.data;
+      geocodeError = response.error;
+    } catch {
+      return { error: "Não foi possível localizar os endereços agora. Confira cidade e UF, ou marque o ponto de cada parada no mapa e tente novamente." };
+    }
+
+    if (geocodeError || !data || !Array.isArray(data.results)) {
+      return { error: "Não foi possível localizar os endereços agora. Confira cidade e UF, ou marque o ponto de cada parada no mapa e tente novamente." };
+    }
+
+    const matches = new Map<number, { latitude: number; longitude: number }>();
+    for (const result of data.results as Array<Record<string, unknown>>) {
+      const index = Number(result.stop_index);
+      const latitude = Number(result.latitude);
+      const longitude = Number(result.longitude);
+      if (result.status === "matched" && Number.isInteger(index) && Number.isFinite(latitude) && Number.isFinite(longitude)) {
+        matches.set(index, { latitude, longitude });
+      }
+    }
+
+    for (const { parada, stop_index } of stopsToGeocode) {
+      const point = matches.get(stop_index);
+      if (!point || Math.abs(point.latitude) > 90 || Math.abs(point.longitude) > 180) {
+        return { error: `Não localizei a parada ${stop_index} com precisão suficiente. Revise rua e número, bairro, cidade e UF, ou marque a entrada no mapa.` };
+      }
+      parada.latitude = point.latitude;
+      parada.longitude = point.longitude;
+    }
+  }
+
   const { error } = await supabase.rpc("create_order_with_stops", {
     p_request_id: requestId,
     p_client_id: clientId,
@@ -144,7 +212,8 @@ export async function criarPedido(
 
   revalidatePath("/painel");
   revalidatePath("/painel/paradas");
-  redirect("/painel");
+  revalidatePath("/painel/despacho");
+  redirect("/painel/despacho");
 }
 
 

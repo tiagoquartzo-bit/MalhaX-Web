@@ -57,7 +57,12 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
   }
 
   function atualizarParada(indice: number, campo: keyof Parada, valor: string) {
-    setParadas((atuais) => atuais.map((parada, i) => i === indice ? { ...parada, [campo]: valor } : parada));
+    const campoMudaEndereco = ["address_line", "address_extra", "district", "city", "state", "postal_code"].includes(campo);
+    setParadas((atuais) => atuais.map((parada, i) => i === indice ? {
+      ...parada,
+      [campo]: valor,
+      ...(campoMudaEndereco ? { latitude: "", longitude: "" } : {}),
+    } : parada));
   }
 
   function alternarVolume(indiceParada: number, indiceVolume: number, marcado: boolean) {
@@ -131,7 +136,7 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
           </div>
           <span className={styles.counter}>{volumes.length} {volumes.length === 1 ? "unidade" : "unidades"}</span>
         </div>
-        <p className={styles.help}>Cada unidade recebe seu próprio código de produto ao salvar.</p>
+        <p className={styles.help}>Informe o peso de cada volume. O mesmo volume fica ligado às paradas de coleta e entrega e acompanha o motorista.</p>
 
         <div className={styles.list}>
           {volumes.map((volume, indice) => (
@@ -142,8 +147,8 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
                 <input value={volume.description} onChange={(event) => atualizarVolume(indice, "description", event.target.value)} maxLength={200} placeholder="Ex.: caixa de material escolar" />
               </label>
               <label className={styles.field}>
-                <span>Peso em kg <small>opcional</small></span>
-                <input value={volume.weight_kg} onChange={(event) => atualizarVolume(indice, "weight_kg", event.target.value)} type="text" inputMode="decimal" maxLength={20} placeholder="0,00" />
+                <span>Peso do volume em kg</span>
+                <input value={volume.weight_kg} onChange={(event) => atualizarVolume(indice, "weight_kg", event.target.value)} type="text" inputMode="decimal" maxLength={20} placeholder="Ex.: 12,5" required aria-label={`Peso em quilogramas do volume ${indice + 1}`} />
               </label>
               <button type="button" className={styles.removeButton} onClick={() => removerVolume(indice)} disabled={volumes.length === 1}>Remover volume</button>
             </fieldset>
@@ -160,11 +165,11 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
           </div>
           <span className={styles.counter}>{coletas} coletas · {entregas} entregas</span>
         </div>
-        <p className={styles.help}>As quantidades são independentes. Cada parada tem endereço próprio e pode ser adicionada ou removida.</p>
+        <p className={styles.help}>Informe rua, número, bairro, cidade e UF. Ao salvar, o sistema localiza cada endereço para posicionar as paradas no mapa. Se o resultado não for preciso, marque a entrada no mapa. Você não precisa digitar latitude ou longitude.</p>
         {paradasSemCoordenadas > 0 ? (
           <p className={styles.mapNotice} role="status">
-            <strong>{paradasSemCoordenadas} {paradasSemCoordenadas === 1 ? "parada sem coordenadas" : "paradas sem coordenadas"}.</strong>
-            {" "}O pedido pode ser salvo, mas esses locais não terão marcador no mapa do motorista até você marcar o ponto.
+            <strong>{paradasSemCoordenadas} {paradasSemCoordenadas === 1 ? "parada sem ponto no mapa" : "paradas sem ponto no mapa"}.</strong>
+            {" "}Os endereços serão localizados automaticamente ao salvar. Se algum não for reconhecido com precisão, o sistema pedirá que você marque a entrada no mapa.
           </p>
         ) : (
           <p className={styles.mapSuccess} role="status">Todas as paradas têm coordenadas para aparecer no mapa da rota.</p>
@@ -198,12 +203,12 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
                   <input value={parada.district} onChange={(event) => atualizarParada(indice, "district", event.target.value)} maxLength={100} />
                 </label>
                 <label className={styles.field}>
-                  <span>Cidade <small>opcional</small></span>
-                  <input value={parada.city} onChange={(event) => atualizarParada(indice, "city", event.target.value)} maxLength={100} />
+                  <span>Cidade</span>
+                  <input value={parada.city} onChange={(event) => atualizarParada(indice, "city", event.target.value)} maxLength={100} placeholder="Ex.: São Paulo" required />
                 </label>
                 <label className={styles.field}>
-                  <span>UF <small>opcional</small></span>
-                  <input value={parada.state} onChange={(event) => atualizarParada(indice, "state", event.target.value)} maxLength={2} />
+                  <span>UF</span>
+                  <input value={parada.state} onChange={(event) => atualizarParada(indice, "state", event.target.value.toUpperCase())} maxLength={2} placeholder="SP" required />
                 </label>
                 <label className={styles.field}>
                   <span>CEP <small>opcional</small></span>
@@ -221,26 +226,13 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
 
               <div>
                 <p className={styles.coordinateHelp}>
-                  Coordenadas do local{" "}
+                  Localização da parada{" "}
                   <span className={parada.latitude.trim() && parada.longitude.trim() ? styles.coordinateConfirmed : styles.coordinateMissing}>
-                    {parada.latitude.trim() && parada.longitude.trim() ? "· ponto marcado" : "· falta marcar no mapa"}
+                    {parada.latitude.trim() && parada.longitude.trim() ? "· ponto conferido" : "· usando o endereço"}
                   </span>
-                  <small>Marque o ponto conferido no mapa. O endereço digitado não é convertido automaticamente.</small>
+                  <small>As coordenadas são buscadas pelo endereço ao salvar. O motorista verá o destino nesta ordem.</small>
                 </p>
-                <div className={styles.grid}>
-                  <label className={styles.field}>
-                    <span>Latitude</span>
-                    <input value={parada.latitude} onChange={(event) => atualizarParada(indice, "latitude", event.target.value)} maxLength={24} inputMode="decimal" placeholder="Ex.: -23.626100" aria-label={`Latitude da parada ${indice + 1}`} />
-                  </label>
-                  <label className={styles.field}>
-                    <span>Longitude</span>
-                    <input value={parada.longitude} onChange={(event) => atualizarParada(indice, "longitude", event.target.value)} maxLength={24} inputMode="decimal" placeholder="Ex.: -46.757400" aria-label={`Longitude da parada ${indice + 1}`} />
-                  </label>
-                </div>
                 <CoordinatePicker latitude={parada.latitude} longitude={parada.longitude} onSelect={(lat, lng) => setParadas((atuais) => atuais.map((item, i) => i === indice ? { ...item, latitude: lat, longitude: lng } : item))} />
-                {parada.latitude.trim() && parada.longitude.trim() ? (
-                  <a className={styles.coordinateLink} href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${parada.latitude.trim()},${parada.longitude.trim()}`)}`} target="_blank" rel="noopener noreferrer">Conferir o ponto no Google Maps ↗</a>
-                ) : null}
               </div>
 
               <fieldset className={styles.packageLinks}>
@@ -279,7 +271,7 @@ export function NovoPedidoForm({ clientes, requestId }: { clientes: Cliente[]; r
       <div className={styles.submitRow}>
         <p>Os volumes e endereços serão gravados juntos em uma única operação.</p>
         <button type="submit" className={styles.submitButton} disabled={pending || clientes.length === 0}>
-          {pending ? "Salvando pedido…" : "Criar pedido e gerar códigos"}
+          {pending ? "Salvando pedido…" : "Salvar pedido e continuar para o despacho"}
         </button>
       </div>
       {clientes.length === 0 ? <p role="status" className={styles.error}>Cadastre um cliente ativo antes de criar o pedido.</p> : null}

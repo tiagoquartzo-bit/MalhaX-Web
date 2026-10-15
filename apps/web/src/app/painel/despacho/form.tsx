@@ -14,6 +14,9 @@ type ParadaDisponivel = {
   district: string | null;
   city: string | null;
   created_at: string;
+  volumeCount: number;
+  pesoTotalKg: number;
+  pesoInformadoCount: number;
 };
 type Motorista = { id: string; name: string };
 type Veiculo = { id: string; label: string };
@@ -36,7 +39,16 @@ export function DespachoForm({
   const selecionadas = new Set(sequencia);
 
   function alternarParada(id: string, checked: boolean) {
-    setSequencia((atual) => checked ? [...atual, id] : atual.filter((item) => item !== id));
+    setSequencia((atual) => {
+      const selecionadasAgora = new Set(atual);
+      if (checked) selecionadasAgora.add(id);
+      else selecionadasAgora.delete(id);
+      const ordenadas = [
+        ...paradas.filter((parada) => parada.stop_type === "pickup" && selecionadasAgora.has(parada.id)),
+        ...paradas.filter((parada) => parada.stop_type === "delivery" && selecionadasAgora.has(parada.id)),
+      ];
+      return ordenadas.map((parada) => parada.id);
+    });
   }
 
   function mover(indice: number, direcao: -1 | 1) {
@@ -67,7 +79,7 @@ export function DespachoForm({
           </div>
           <span className={styles.counter}>{paradas.length} aguardando</span>
         </div>
-        <p className={styles.help}>Marque as coletas e entregas que entrarão nesta viagem. Você poderá ajustar a ordem no próximo quadro.</p>
+        <p className={styles.help}>Marque as paradas dos pedidos. A lista já coloca coletas antes das entregas; depois você pode ajustar a ordem pelas setas.</p>
 
         {paradas.length === 0 ? (
           <p className={styles.empty}>Nenhuma parada aguardando despacho. Cadastre um pedido para começar.</p>
@@ -87,6 +99,7 @@ export function DespachoForm({
                   <strong>{parada.address_label}</strong>
                   <span>Pedido #{parada.order_number} · {parada.address_line}</span>
                   {(parada.district || parada.city) ? <small>{[parada.district, parada.city].filter(Boolean).join(" · ")}</small> : null}
+                  <small>{parada.volumeCount} {parada.volumeCount === 1 ? "volume" : "volumes"} · {parada.pesoInformadoCount === parada.volumeCount ? `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 }).format(parada.pesoTotalKg)} kg` : "peso pendente"}</small>
                 </span>
               </label>
             ))}
@@ -102,6 +115,7 @@ export function DespachoForm({
           </div>
           <span className={styles.counter}>{totalColetas} coletas · {totalEntregas} entregas</span>
         </div>
+        <p className={styles.help}>A sequência acompanha os volumes do pedido. O sistema impede entregar um volume antes de coletá-lo nesta viagem.</p>
         {paradasNaSequencia.length === 0 ? (
           <p className={styles.empty}>Selecione ao menos uma parada acima.</p>
         ) : (
@@ -115,6 +129,7 @@ export function DespachoForm({
                 <span className={styles.itemContent}>
                   <strong>{parada.address_label}</strong>
                   <span>Pedido #{parada.order_number} · {parada.address_line}</span>
+                  <small>{parada.volumeCount} {parada.volumeCount === 1 ? "volume" : "volumes"} · {parada.pesoInformadoCount === parada.volumeCount ? `${new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 }).format(parada.pesoTotalKg)} kg` : "peso pendente"}</small>
                 </span>
                 <span className={styles.sequenceActions}>
                   <button type="button" aria-label={`Mover ${parada.address_label} para cima`} onClick={() => mover(indice, -1)} disabled={indice === 0}>↑</button>

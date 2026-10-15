@@ -2,6 +2,17 @@
 
 Functions exposed to the client must validate the bearer token, check organization-scoped roles, validate input, and keep service-role secrets exclusively in the function environment.
 
+## `geocode-order-stops`
+
+Geocodes the address for each unpinned pickup or delivery before the order is saved. The function verifies the bearer token and an `admin`, `manager`, or `dispatcher` role, sends only address fields to HeiGIT's Pelias endpoint, and returns coordinates only for high-confidence, precise matches. A missing or ambiguous match blocks order creation until the address is corrected or its point is marked on the map. Contact details and delivery instructions are never sent to the provider, and request data is not logged.
+
+Required function secret: `OPENROUTESERVICE_API_KEY`.
+
+- Local: store the key in the ignored environment file and run `supabase functions serve geocode-order-stops --env-file supabase/.env.local`.
+- Hosted Supabase: set the key with `supabase secrets set OPENROUTESERVICE_API_KEY=...` and deploy with `supabase functions deploy geocode-order-stops`.
+
+The function uses `https://api.heigit.org/pelias/v1/search` with a Brazil country boundary. It processes stops sequentially to stay below the Standard geocoding per-minute limit.
+
 ## `invite-driver`
 
 Invite-only driver provisioning for Activia. Requires a valid logged-in account with the `admin`, `manager`, or `support` role. The function invites the email using Supabase Auth, then calls the service-role-only `provision_invited_driver` RPC. It never accepts an organization or role from the request body.

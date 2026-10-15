@@ -24,7 +24,7 @@ export type DriverStop = {
   latitude: number | null;
   longitude: number | null;
   instructions: string | null;
-  packages: Array<{ code: string; description: string | null; action: string }>;
+  packages: Array<{ code: string; description: string | null; weightKg: number | null; action: string }>;
 };
 
 export type DriverTrip = {
@@ -86,7 +86,7 @@ export async function loadAssignedTrips(): Promise<DriverTrip[]> {
   const { data: packageRows, error: packageError } = stopIds.length
     ? await supabase
         .from("stop_packages")
-        .select("stop_id, expected_action, packages(package_code, description, custodian_trip_id)")
+        .select("stop_id, expected_action, packages(package_code, description, weight_kg, custodian_trip_id)")
         .in("stop_id", stopIds)
     : { data: [], error: null };
   if (packageError) throw packageError;
@@ -94,10 +94,10 @@ export async function loadAssignedTrips(): Promise<DriverTrip[]> {
   const stopTripById = new Map((stopRows ?? []).map((stop) => [stop.id, stop.trip_id]));
   const packagesByStop = new Map<string, DriverStop["packages"]>();
   for (const row of packageRows ?? []) {
-    const related = row.packages as unknown as { package_code: string; description: string | null; custodian_trip_id: string | null } | null;
+    const related = row.packages as unknown as { package_code: string; description: string | null; weight_kg: number | null; custodian_trip_id: string | null } | null;
     if (related?.custodian_trip_id && related.custodian_trip_id !== stopTripById.get(row.stop_id)) continue;
     const list = packagesByStop.get(row.stop_id) ?? [];
-    if (related) list.push({ code: related.package_code, description: related.description, action: row.expected_action });
+    if (related) list.push({ code: related.package_code, description: related.description, weightKg: related.weight_kg, action: row.expected_action });
     packagesByStop.set(row.stop_id, list);
   }
   const stopsByTrip = new Map<string, DriverStop[]>();

@@ -37,6 +37,7 @@ import { tripLabels } from "./TripsScreen";
 import { GpsStatusPanel } from "../components/GpsStatusPanel";
 
 const closedStatuses = new Set(["completed", "failed", "skipped"]);
+const pesoEmKg = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 3 });
 
 export function TripScreen({
   trip,
@@ -422,17 +423,14 @@ export function TripScreen({
                 <View style={styles.stopHeading}>
                   <Text style={styles.stopType}>{tripLabels.stopTypeLabel[stop.type] ?? stop.type}</Text>
                   <Text style={styles.stopTitle}>{stop.addressLabel}</Text>
+                  {isActive ? <Text style={styles.nextStopBadge}>PRÓXIMA PARADA</Text> : null}
                 </View>
                 <Text style={styles.stopStatus}>{awaitingSync ? "Pendente de sync" : tripLabels.stopStatusLabel[stop.status] ?? stop.status}</Text>
               </View>
               {awaitingSync ? <Text style={styles.queuedStopNote}>Atualização salva no aparelho; aguardando confirmação do servidor.</Text> : null}
               <Text style={styles.address}>{stop.addressLine}{stop.addressExtra ? `, ${stop.addressExtra}` : ""}</Text>
               <Text style={styles.addressMuted}>{[stop.district, stop.city, stop.state, stop.postalCode].filter(Boolean).join(" · ")}</Text>
-              {stop.latitude !== null && stop.longitude !== null ? (
-                <Text selectable style={styles.stopCoordinates}>Coordenadas do destino · {stop.latitude.toFixed(6)}, {stop.longitude.toFixed(6)}</Text>
-              ) : (
-                <Text style={styles.stopCoordinatesMissing}>GPS do destino não cadastrado · o Maps usará o endereço</Text>
-              )}
+              <Text style={styles.stopAddressHint}>{stop.latitude !== null && stop.longitude !== null ? "Ponto no mapa conferido" : "Navegação pelo endereço"}</Text>
               {stop.contactName ? <Text style={styles.contact}>{stop.contactName}</Text> : null}
               {stop.contactPhone ? (
                 <Pressable accessibilityRole="button" accessibilityLabel={`Ligar para ${stop.contactName || "o contato da parada"}, ${stop.contactPhone}`} hitSlop={8} onPress={() => void callContact(stop)} style={styles.callContact}>
@@ -441,7 +439,7 @@ export function TripScreen({
               ) : null}
               {stop.instructions ? <Text style={styles.instructions}>Orientação: {stop.instructions}</Text> : null}
               <View style={styles.packages}>
-                {stop.packages.map((item, index) => <Text key={`${item.code}-${index}`} style={styles.packageCode}>{item.action === "load" ? "Coletar" : item.action === "unload" ? "Entregar" : "Retorno"} · {item.code}{item.description ? ` · ${item.description}` : ""}</Text>)}
+                {stop.packages.map((item, index) => <Text key={`${item.code}-${index}`} style={styles.packageCode}>{item.action === "load" ? "Coletar" : item.action === "unload" ? "Entregar" : "Retorno"} · {item.code}{item.description ? ` · ${item.description}` : ""}{item.weightKg !== null ? ` · ${pesoEmKg.format(item.weightKg)} kg` : " · peso não cadastrado"}</Text>)}
               </View>
               {isActive ? <Pressable onPress={() => void openNavigation(stop)} style={styles.secondaryButton}><Text style={styles.secondaryText}>Abrir rota no Google Maps</Text></Pressable> : null}
               {isActive && trip.status !== "paused" && stop.status === "pending" ? <ActionButton busy={isBusy} label="Cheguei ao local" onPress={() => void changeStatus(stop, "arrived")} /> : null}
@@ -551,8 +549,8 @@ const styles = StyleSheet.create({
   stopStatus: { color: "#b9c7d8", fontSize: 11, maxWidth: 100, textAlign: "right" },
   address: { color: "#d0d9e5", lineHeight: 21, marginTop: 14 },
   addressMuted: { color: "#8d9bb0", fontSize: 13, lineHeight: 19, marginTop: 4 },
-  stopCoordinates: { color: "#7894aa", fontSize: 11, lineHeight: 17, marginTop: 6 },
-  stopCoordinatesMissing: { color: "#c6a35e", fontSize: 11, lineHeight: 17, marginTop: 6 },
+  stopAddressHint: { color: "#8cecf1", fontSize: 11, lineHeight: 17, marginTop: 6 },
+  nextStopBadge: { color: "#07101e", backgroundColor: "#38e1ff", alignSelf: "flex-start", overflow: "hidden", borderRadius: 5, paddingHorizontal: 6, paddingVertical: 3, marginTop: 6, fontSize: 9, fontWeight: "900", letterSpacing: 0.5 },
   contact: { color: "#a9b7c9", fontSize: 13, marginTop: 9 },
   callContact: { alignSelf: "flex-start", minHeight: 42, justifyContent: "center", marginTop: 4, paddingHorizontal: 12, borderRadius: 10, backgroundColor: "#12273a" },
   callContactText: { color: "#68d9c0", fontSize: 13, fontWeight: "700" },

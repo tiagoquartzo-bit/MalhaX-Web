@@ -25,6 +25,9 @@ site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/**", "activia://auth/callback"]
 enable_signup = false
 
+[functions.geocode-order-stops]
+verify_jwt = true
+
 [storage]
 enabled = true
 file_size_limit = "20MiB"

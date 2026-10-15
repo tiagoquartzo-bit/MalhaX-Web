@@ -17,6 +17,7 @@ type ParadaRow = {
   district: string | null;
   city: string | null;
   created_at: string;
+  order_stop_packages: Array<{ packages: { weight_kg: number | null } | null }>;
 };
 type PedidoRow = { id: string; order_number: number };
 type MotoristaRow = { id: string; profile_id: string | null };
@@ -44,7 +45,7 @@ export default async function DespachoPage() {
 
   const [stopsResult, driversResult, vehiclesResult] = await Promise.all([
     supabase.from("order_stops")
-      .select("id, order_id, stop_type, address_label, address_line, district, city, created_at")
+      .select("id, order_id, stop_type, address_label, address_line, district, city, created_at, order_stop_packages(packages(weight_kg))")
       .in("status", ["pending_dispatch", "exception"])
       .order("created_at", { ascending: true })
       .limit(1000)
@@ -80,7 +81,10 @@ export default async function DespachoPage() {
   const nomePorPerfilId = new Map((perfis ?? []).map((perfil) => [perfil.id, perfil.full_name]));
   const paradas = (stopsResult.data ?? []).flatMap((stop) => {
     const order_number = numeroPedidoPorId.get(stop.order_id);
-    return order_number === undefined ? [] : [{ ...stop, order_number }];
+    if (order_number === undefined) return [];
+    const pesoTotalKg = stop.order_stop_packages.reduce((sum, link) => sum + Number(link.packages?.weight_kg ?? 0), 0);
+    const pesoInformadoCount = stop.order_stop_packages.filter((link) => link.packages?.weight_kg !== null && link.packages?.weight_kg !== undefined).length;
+    return [{ ...stop, order_number, volumeCount: stop.order_stop_packages.length, pesoTotalKg, pesoInformadoCount }];
   });
   const motoristas = (driversResult.data ?? []).flatMap((driver) => {
     const name = driver.profile_id ? nomePorPerfilId.get(driver.profile_id) : undefined;
