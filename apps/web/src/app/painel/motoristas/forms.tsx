@@ -14,7 +14,7 @@ export function ConviteMotoristaForm() {
       <label className={styles.field}><span>Nome e sobrenome</span><input name="full_name" required minLength={3} maxLength={120} autoComplete="name" /></label>
       <label className={styles.field}><span>E-mail para acesso</span><input name="email" type="email" required maxLength={254} autoComplete="email" /></label>
       <label className={styles.field}><span>Telefone <small>opcional</small></span><input name="phone" type="tel" maxLength={32} autoComplete="tel" /></label>
-      <p className={styles.note}>O motorista receberá um convite para confirmar o e-mail e criar a própria senha.</p>
+      <p className={styles.note}>O motorista receberá um convite para confirmar o e-mail e criar a própria senha. Se o endereço já tiver uma conta MalhaX, a tela orientará como resolver.</p>
       {state.error ? <p role="alert" className={styles.error}>{state.error}</p> : null}
       <button className={styles.primaryButton} type="submit" disabled={pending}>{pending ? "Enviando convite…" : "Convidar motorista"}</button>
     </form>

@@ -57,10 +57,14 @@ Deno.serve(async (request: Request) => {
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  const { data: organizationId, error: organizationMembershipError } = await callerClient.rpc("current_organization_id");
+  if (organizationMembershipError || typeof organizationId !== "string") {
+    return json(403, { error: "organization_required" });
+  }
   const { data: organization, error: organizationError } = await adminClient
     .from("organizations")
     .select("id")
-    .eq("slug", "activia")
+    .eq("id", organizationId)
     .eq("status", "active")
     .single();
   if (organizationError || !organization) return json(503, { error: "organization_unavailable" });
@@ -77,7 +81,17 @@ Deno.serve(async (request: Request) => {
     redirectTo,
   });
   if (inviteError || !inviteData.user) {
-    // Mensagem sem distinguir conta existente de endereço não elegível.
+    const code = inviteError?.code?.toLowerCase() ?? "";
+    const message = inviteError?.message?.toLowerCase() ?? "";
+    if (
+      code.includes("email_exists") ||
+      code.includes("already_registered") ||
+      code.includes("user_already_exists") ||
+      message.includes("already registered") ||
+      message.includes("already exists")
+    ) {
+      return json(409, { error: "existing_account" });
+    }
     return json(400, { error: "invite_not_sent" });
   }
 

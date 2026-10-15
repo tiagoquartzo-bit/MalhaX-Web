@@ -15,12 +15,54 @@ async function getAuthorizedRoles(allowed: Set<string>) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { supabase, error: "Sua sessão expirou. Entre novamente." };
+  const { data: organizationId, error: organizationError } = await supabase.rpc("current_organization_id");
+  if (organizationError || typeof organizationId !== "string") {
+    return { supabase, error: "Sua conta não está vinculada a uma empresa ativa. Peça ao administrador para revisar seu acesso." };
+  }
   const { data: rows, error } = await supabase
-    .from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (error || !rows?.some(({ role }) => allowed.has(role))) {
+    .from("organization_member_roles").select("role")
+    .eq("organization_id", organizationId).eq("user_id", user.id);
+  if (error) {
+    return { supabase, error: "Não foi possível validar seu acesso agora. Atualize a página e tente novamente." };
+  }
+  if (!rows?.some(({ role }) => allowed.has(role))) {
     return { supabase, error: "Seu perfil não tem permissão para esta ação." };
   }
   return { supabase, error: null };
+}
+
+async function getInviteFailureCode(error: unknown): Promise<string | null> {
+  if (!error || typeof error !== "object") return null;
+  const context = (error as { context?: unknown }).context;
+  if (!(context instanceof Response)) return null;
+  const payload = await context.clone().json().catch(() => null) as { error?: unknown } | null;
+  return typeof payload?.error === "string" ? payload.error : null;
+}
+
+function inviteFailureMessage(code: string | null): string {
+  switch (code) {
+    case "not_authenticated":
+      return "Sua sessão expirou. Entre novamente e reenvie o convite.";
+    case "organization_required":
+    case "organization_unavailable":
+      return "Sua conta não está vinculada a uma empresa ativa. Peça ao administrador para revisar o acesso.";
+    case "forbidden":
+      return "Seu perfil não pode convidar motoristas nesta empresa.";
+    case "invalid_email":
+      return "Confira o endereço de e-mail do motorista.";
+    case "invalid_driver_data":
+      return "Informe nome e sobrenome. O telefone é opcional.";
+    case "invitation_service_not_configured":
+      return "O serviço de convites ainda não está configurado no Supabase. O administrador precisa revisar as configurações de e-mail e do aplicativo.";
+    case "existing_account":
+      return "Este e-mail já tem uma conta MalhaX. Peça ao administrador para revisar o vínculo antes de enviar outro convite.";
+    case "invite_provisioning_failed":
+      return "O convite começou, mas o cadastro não foi concluído. Não reenvie agora; peça ao suporte para revisar o acesso do motorista.";
+    case "invite_not_sent":
+      return "O Supabase não aceitou o convite. Confira o e-mail; se persistir, o administrador deve revisar o envio de convites no Supabase.";
+    default:
+      return "Não foi possível concluir o convite agora. Atualize a página e tente novamente; se persistir, peça ao administrador para verificar o Supabase.";
+  }
 }
 
 export async function convidarMotorista(_prev: MotoristaState, formData: FormData): Promise<MotoristaState> {
@@ -41,7 +83,8 @@ export async function convidarMotorista(_prev: MotoristaState, formData: FormDat
     body: { full_name: fullName, email, phone: phone || null },
   });
   if (error || data?.status !== "invitation_sent") {
-    return { error: "Não foi possível enviar o convite. Verifique se o serviço de e-mail local está disponível e tente novamente." };
+    const code = await getInviteFailureCode(error);
+    return { error: inviteFailureMessage(code) };
   }
 
   revalidatePath("/painel/motoristas");
