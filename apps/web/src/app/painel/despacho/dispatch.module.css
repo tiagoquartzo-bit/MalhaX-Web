@@ -333,3 +333,36 @@
     grid-row: 1;
   }
 }
+
+/* Backoffice dark theme: keep every dispatch stage readable on the shared dark shell. */
+.form { color: #e8f2ff; }
+.card { border-color: #20344a; background: linear-gradient(145deg, #0d1b2d, #0a1626 75%); box-shadow: 0 16px 36px rgb(0 0 0 / 14%); }
+.heading h2 { color: #f3f7fb; }
+.eyebrow { color: #00d2dc; }
+.counter { border: 1px solid #1c4552; background: #102b38; color: #8cebf0; }
+.help { color: #a8b8ca; }
+.empty { border-color: #29445c; background: #091625; color: #b7c8d8; }
+.availableItem, .sequenceItem { border-color: #263d55; background: #091625; }
+.availableItem:hover, .isSelected { border-color: #277783; background: #0d2634; }
+.availableItem > input { accent-color: #00c2cb; }
+.badge { border: 1px solid #29445c; }
+.pickup { background: #102b31; color: #83e3ce; }
+.delivery { background: #102338; color: #9bcff2; }
+.itemContent { color: #aabbd0; }
+.itemContent strong { color: #e8f2ff; }
+.itemContent small { color: #94a8bc; }
+.sequenceNumber { background: #00c2cb; color: #061522; }
+.sequenceActions button { border-color: #2a4058; background: #0b1a2b; color: #c9d7e4; }
+.sequenceActions button:disabled { color: #65788c; }
+.field { color: #dbe6f1; }
+.field small { color: #9aabc0; }
+.field input, .field select { border-color: #2a4058; background: #081321; color: #f3f7fb; color-scheme: dark; }
+.field input:focus-visible, .field select:focus-visible, .sequenceActions button:focus-visible, .availableItem input:focus-visible { border-color: #00c2cb; }
+.warning { border: 1px solid #6c542b; background: #292317; color: #f3d99d; }
+.error { border: 1px solid #713942; background: #2b1720; color: #ffc2c6; }
+.submitRow p { color: #9aabc0; }
+.submitButton { border-color: #00c2cb; background: #00c2cb; color: #061522; }
+.submitButton:disabled { border-color: #36505e; background: #263c4d; color: #8ea1b2; }
+
+.orderChip { min-height: 34px; padding: 0 12px; border: 1px solid #2a4c63; border-radius: 999px; background: #0b1a2b; color: #cfe3f1; font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer; }
+.orderChip[aria-pressed="true"] { border-color: #00c2cb; background: #0c2932; color: #8cecf1; }

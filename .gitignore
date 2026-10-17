@@ -36,3 +36,8 @@ Thumbs.db
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Backups e cópias de conflito do OneDrive (não versionar)
+_backups/
+_conflitos_onedrive/
+*-GAMER*

@@ -5,3 +5,21 @@
 @media(max-width:760px){.chartHeader{display:grid}.chartLegend{justify-content:flex-start}.chartPanel{padding:14px}.indicatorChooser{grid-template-columns:1fr}.exportButton{grid-column:1;grid-row:auto;justify-self:start}}
 
 .controlLinks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 22px}.controlLinks a{display:grid;grid-template-columns:32px 1fr;column-gap:10px;align-items:center;padding:14px;border:1px solid #e1e8ef;border-radius:13px;background:#fff;color:#172b42;text-decoration:none;transition:border-color .15s,transform .15s}.controlLinks a:hover{border-color:#8bcfd2;transform:translateY(-1px)}.controlLinks a>span{grid-row:span 2;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:#e8f7f7;color:#087e8b;font-size:18px}.controlLinks strong{font-size:.84rem}.controlLinks small{margin-top:3px;color:#708195;font-size:.72rem}@media(max-width:900px){.controlLinks{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:520px){.controlLinks{gap:8px}.controlLinks a{padding:10px;grid-template-columns:28px 1fr}.controlLinks a>span{width:28px;height:28px}.controlLinks small{font-size:.67rem}}
+
+/* Tema escuro unificado com o restante do painel */
+.page { padding: 18px 0 40px; }
+.header > strong { background: #0f2c3a; color: #7fe5ee; }
+.filters, .indicatorChooser, .periodTabs { background: #0b1728 !important; border-color: #1d3247 !important; }
+.filters label, .indicatorToggles label { color: #c7d5e3 !important; }
+.filters select { background: #081321 !important; border-color: #2a4058 !important; color: #eef5fb !important; color-scheme: dark; }
+.filters button, .exportButton { background: #00c2cb !important; border-color: #00c2cb !important; color: #04121d !important; }
+.periodTabs a { color: #b7c3d3 !important; }
+.periodActive { background: #0f2c3a !important; color: #7fe5ee !important; }
+.card, .chartPanel { background: #0b1728 !important; border-color: #1d3247 !important; box-shadow: none !important; }
+.card span { color: #9fb2c6 !important; }
+.card strong { color: #f3f7fb !important; }
+.card small, .note { color: #8ea2b6 !important; }
+.chartHeader h2 { color: #f3f7fb !important; }
+.chartMonth, .chartLegend { color: #9fb2c6 !important; }
+.controlLinks { display: none; }
+.error { background: #2b1720 !important; color: #ffc2c6 !important; }

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { mensagemDeErroRpc } from "../../../lib/rpc-errors";
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 
 export type DespachoState = { error: string | null };
 
@@ -58,11 +59,8 @@ export async function despacharViagem(
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Sua sessão expirou. Entre novamente." };
 
-  const { data: papeis, error: erroPapeis } = await supabase
-    .from("organization_member_roles")
-    .select("role")
-    .eq("user_id", user.id);
-  if (erroPapeis || !papeis?.some(({ role }) => PAPEIS_QUE_DESPACHAM.has(role))) {
+  const { roles: papeis, error: erroPapeis } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (erroPapeis || !papeis.some((role) => PAPEIS_QUE_DESPACHAM.has(role))) {
     return { error: "Você não tem permissão para despachar viagens." };
   }
 
@@ -89,6 +87,16 @@ export async function despacharViagem(
   }
   if (new Set(stopIds).size !== stopIds.length) return { error: "A sequência contém uma parada repetida." };
 
+  const { data: selectedStops, error: selectedStopsError } = await supabase
+    .from("order_stops")
+    .select("id, latitude, longitude")
+    .in("id", stopIds);
+  if (selectedStopsError || !selectedStops || selectedStops.length !== stopIds.length) {
+    return { error: "As paradas mudaram ou não estão mais disponíveis. Atualize a página e tente novamente." };
+  }
+  if (selectedStops.some((stop) => stop.latitude === null || stop.longitude === null)) {
+    return { error: "Uma ou mais paradas ainda não têm localização confirmada. Corrija o endereço antes de despachar." };
+  }
   const { data: vinculosDosVolumes, error: erroDosVinculos } = await supabase
     .from("order_stop_packages")
     .select("order_stop_id, package_id, expected_action")
@@ -115,12 +123,33 @@ export async function despacharViagem(
     return { error: "Informe um horário previsto válido." };
   }
 
+  let previsoesLocais: unknown;
+  try {
+    previsoesLocais = JSON.parse(String(formData.get("stop_planned_at") ?? "[]"));
+  } catch {
+    return { error: "As previsões das paradas estão inválidas." };
+  }
+  if (!Array.isArray(previsoesLocais) || previsoesLocais.length !== stopIds.length) {
+    return { error: "Informe a previsão de chegada de cada parada." };
+  }
+  const previsoes: string[] = [];
+  for (const [indice, valor] of previsoesLocais.entries()) {
+    const iso = typeof valor === "string" ? dataLocalDeSaoPauloParaIso(valor) : null;
+    if (!iso) return { error: `Informe uma previsão válida para a parada ${indice + 1}.` };
+    if (new Date(iso) < new Date(plannedAt)) return { error: `A previsão da parada ${indice + 1} é anterior à saída.` };
+    if (previsoes.length && new Date(iso) < new Date(previsoes[previsoes.length - 1])) {
+      return { error: `A previsão da parada ${indice + 1} é anterior à da parada ${indice}.` };
+    }
+    previsoes.push(iso);
+  }
+
   const { data: tripId, error } = await supabase.rpc("dispatch_trip_from_order_stops", {
     p_request_id: requestId,
     p_driver_id: driverId,
     p_vehicle_id: vehicleValue || null,
     p_planned_start_at: plannedAt,
     p_order_stop_ids: stopIds,
+    p_planned_at: previsoes,
   });
 
   if (error) return { error: mensagemDeErroRpc(error.message) };

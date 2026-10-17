@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { mensagemDeErroRpc } from "../../../lib/rpc-errors";
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 
 export type ClienteState = { error: string | null };
 
@@ -20,9 +21,8 @@ export async function criarCliente(_prev: ClienteState, formData: FormData): Pro
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Sua sessão expirou. Entre novamente." };
 
-  const { data: roles, error: rolesError } = await supabase
-    .from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (rolesError || !roles?.some(({ role }) => PAPEIS_QUE_CADASTRAM.has(role))) {
+  const { roles, error: rolesError } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (rolesError || !roles.some((role) => PAPEIS_QUE_CADASTRAM.has(role))) {
     return { error: "Seu perfil não pode cadastrar clientes." };
   }
 

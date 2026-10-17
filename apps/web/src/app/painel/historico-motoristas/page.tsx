@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { TrackingHistory, type TrackingPoint } from "./tracking-history";
 import styles from "./page.module.css";
 
@@ -31,8 +32,8 @@ export default async function TrackingHistoryPage({ searchParams }: { searchPara
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: roles } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (!(roles ?? []).some((row) => OPS_ROLES.includes(row.role))) redirect("/painel");
+  const { roles } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (!roles.some((role) => OPS_ROLES.includes(role))) redirect("/painel");
 
   const { data, error } = await supabase.from("tracking_positions")
     .select("driver_id, trip_id, latitude, longitude, accuracy_meters, captured_at_device, received_at_server")

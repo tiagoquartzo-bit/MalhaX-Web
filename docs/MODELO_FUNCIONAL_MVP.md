@@ -6,7 +6,7 @@ Este documento consolida o modelo operacional para validar antes de alterar ou a
 
 | Entidade | Responsabilidade | Relações principais |
 | --- | --- | --- |
-| Organização | Empresa que usa o MalhaX; Activia é a primeira. | Possui usuários e dados operacionais. |
+| Organização (tenant) | Empresa cliente que usa o MalhaX; Activia é a primeira cadastrada. | Possui usuários, dados e permissões isolados; módulos disponíveis dependem do acesso contratado. |
 | Perfil | Pessoa que acessa o sistema. | Pode ser motorista ou usuário de operação. |
 | Motorista | Cadastro operacional, documentos e situação de aprovação. | Pode estar associado a um perfil e participar de viagens. |
 | Veículo | Placa, tipo/modelo, capacidade e disponibilidade. | Associado à viagem em que foi utilizado. |
@@ -16,7 +16,7 @@ Este documento consolida o modelo operacional para validar antes de alterar ou a
 | Volume | Unidade física transportada, com código único e estado de custódia. | Pertence a um pedido e pode ser ligado às paradas da viagem. |
 | Viagem | Execução atribuída a um motorista e veículo. | Contém paradas em sequência e pode atender vários pedidos. |
 | Parada | Ação de coleta, entrega ou retorno em um endereço. | Pertence à viagem e pode agrupar pedidos/volumes do mesmo local. |
-| Comprovante | Foto ou registro da execução, com recebedor, horário e GPS capturado. | Pertence à parada e, quando aplicável, ao volume. |
+| Comprovante | Foto da entrega e foto do local, recebedor, horário da evidência e GPS com horário/precisão próprios quando disponível. | Pertence à parada e, quando aplicável, ao volume. |
 | Evento/ocorrência | Histórico de mudanças e problemas de execução. | Vinculado à parada, viagem, pedido ou volume. |
 
 ## Fluxo principal
@@ -26,7 +26,7 @@ Este documento consolida o modelo operacional para validar antes de alterar ou a
 3. Gerar um código único para cada volume físico.
 4. Montar uma viagem com X entregas e Y coletas, em quantidades independentes e sem proporção fixa. Cada parada recebe seu próprio tipo e endereço; depois, ordenar a sequência da rota.
 5. Motorista aceita a viagem e atualiza cada parada: chegada, execução, concluída ou falha com motivo.
-6. Na coleta/entrega, conferir os códigos esperados. Ao concluir entrega, salvar foto(s), nome de quem recebeu, horário e latitude/longitude/precisão do aparelho.
+6. Na coleta/entrega, conferir os códigos esperados. Ao concluir entrega, salvar foto da entrega e da fachada/local, nome de quem recebeu e horário da evidência. GPS e horário da leitura são registrados separadamente quando disponíveis; a falta de GPS não bloqueia a entrega e deve ficar visível ao gestor.
 7. Painel acompanha viagem, paradas, evidências e última localização recebida.
 
 ## Relação visual
@@ -70,7 +70,7 @@ erDiagram
 
 ## Estrutura de banco proposta
 
-A migration `202610060006_order_stops_model.sql` adiciona `order_stops` antes do despacho e associa os volumes com `order_stop_packages`. `trip_stops.source_order_stop_id` registra qual tarefa aquela parada executa; `attempt_number` preserva reentregas e novas tentativas. A migration está preparada, mas ainda não foi aplicada.
+A migration `202610060006_order_stops_model.sql` adiciona `order_stops` antes do despacho e associa os volumes com `order_stop_packages`. `trip_stops.source_order_stop_id` registra qual tarefa aquela parada executa; `attempt_number` preserva reentregas e novas tentativas. Ela está aplicada no Supabase local; nenhuma migration foi aplicada em projeto hospedado.
 
 ## Fora do primeiro corte
 
@@ -101,15 +101,15 @@ Otimização automática de rotas, múltiplos motoristas por viagem, transferên
 
 ### Comprovante de entrega
 
-**Obrigatório para concluir entrega:** pelo menos uma foto, nome de quem recebeu, horário de captura/recebimento, latitude, longitude e precisão GPS em metros; também conferir os códigos dos volumes da parada.
+**Obrigatório para concluir entrega:** foto da entrega/mercadoria, foto da fachada/local, nome de quem recebeu e horário da evidência; também conferir os códigos dos volumes da parada. Latitude, longitude, precisão e horário da leitura GPS são um conjunto opcional: todos são registrados juntos quando houver posição válida, e todos ficam nulos quando o aparelho não fornecer GPS.
 
-Assinatura fica opcional no primeiro corte. Se câmera ou localização estiver indisponível, registrar a ocorrência com motivo e exigir liberação autorizada para concluir sem o comprovante normal; o sistema preserva quem liberou e quando.
+Assinatura fica opcional no primeiro corte. Sem câmera ou sem as duas fotos, não é possível concluir pelo fluxo normal; se o GPS estiver indisponível ou com baixa precisão, a entrega pode continuar e o painel sinaliza a ocorrência para análise.
 
 ### Regras de exceção sugeridas
 
 - Falta de destinatário, recusa, endereço incorreto, avaria e divergência de volume exigem motivo e podem receber foto.
 - Uma entrega parcial conclui apenas os volumes confirmados; os restantes ficam pendentes ou em exceção para novo despacho.
-- Coordenadas e valor de precisão são salvos como recebidos pelo aparelho, junto com o horário do servidor; a interface sinaliza baixa precisão em vez de alterar o valor capturado.
+- Coordenadas, precisão e horário da leitura GPS são salvos como recebidos pelo aparelho, separados do horário da evidência e do recebimento pelo servidor; a interface sinaliza ausência/baixa precisão e preserva os valores originais.
 - A tolerância de precisão que exige intervenção deve ser configurável e definida com a operação após um piloto de campo.
 
 

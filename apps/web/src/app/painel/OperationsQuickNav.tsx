@@ -4,10 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./backoffice.module.css";
 
-type IconName = "dashboard" | "driver" | "fleet" | "route" | "transfer" | "support";
+type IconName = "dashboard" | "driver" | "fleet" | "route" | "transfer" | "support" | "orders" | "dispatch";
 
 const links: { label: string; href: string; icon: IconName }[] = [
   { label: "Visão de controle", href: "/dev-preview/controle", icon: "dashboard" },
+  { label: "Pedidos", href: "/painel/pedidos", icon: "orders" },
+  { label: "Despacho", href: "/painel/despacho", icon: "dispatch" },
   { label: "Motoristas", href: "/painel/motoristas", icon: "driver" },
   { label: "Frota", href: "/painel/veiculos", icon: "fleet" },
   { label: "Rotas", href: "/painel/historico-motoristas", icon: "route" },
@@ -39,6 +41,10 @@ function NavigationIcon({ name }: { name: IconName }) {
       return <svg {...common}><circle cx="5" cy="18.5" r="2" /><circle cx="19" cy="5.5" r="2" /><path d="M7 18.5h3a3 3 0 0 0 3-3v-7a3 3 0 0 1 3-3h1" /><path d="m16 3.5 2 2 2-2" /></svg>;
     case "transfer":
       return <svg {...common}><path d="M4 8h15m-3-3 3 3-3 3M20 16H5m3-3-3 3 3 3" /></svg>;
+    case "orders":
+      return <svg {...common}><path d="M6 3.5h9l3 3V20.5H6z" /><path d="M9 10h6M9 14h6M9 18h4" /></svg>;
+    case "dispatch":
+      return <svg {...common}><circle cx="6" cy="6" r="2" /><circle cx="18" cy="18" r="2" /><path d="M8 6h6a3 3 0 0 1 0 6h-4a3 3 0 0 0 0 6h6" /></svg>;
     case "support":
       return <svg {...common}><path d="M4 13v-1a8 8 0 0 1 16 0v1" /><path d="M4 13h3v6H6a2 2 0 0 1-2-2zm16 0h-3v6h1a2 2 0 0 0 2-2zM17 19a5 5 0 0 1-5 2h-1" /></svg>;
   }

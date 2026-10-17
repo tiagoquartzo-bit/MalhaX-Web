@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "../../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../../lib/supabase/organization-roles";
 
 export type TripActionState = { error: string | null; success: string | null };
 
@@ -13,6 +14,8 @@ function text(value: FormDataEntryValue | null) {
 }
 
 function errorMessage(message: string) {
+  if (message.includes("vehicle_capacity_exceeded")) return "A carga passaria da capacidade do veículo desta viagem.";
+  if (message.includes("stop_coordinates_required")) return "Esta tarefa ainda não tem localização confirmada.";
   if (message.includes("package_pickup_must_be_completed_first")) return "Conclua a coleta dos volumes antes de adicionar esta entrega.";
   if (message.includes("pickup_must_precede_delivery")) return "A coleta precisa ficar antes da entrega na sequência.";
   if (message.includes("only_pending_stops_can_be_removed")) return "Só é possível retirar uma parada que ainda não foi iniciada.";
@@ -35,11 +38,8 @@ async function authorizeTrip(tripId: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: "Sua sessão expirou. Entre novamente." as const };
 
-  const { data: roleRows, error: roleError } = await supabase
-    .from("organization_member_roles")
-    .select("role")
-    .eq("user_id", user.id);
-  if (roleError || !(roleRows ?? []).some((row) => EDIT_ROLES.includes(String(row.role)))) {
+  const { roles, error: roleError } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (roleError || !roles.some((role) => EDIT_ROLES.includes(role))) {
     return { error: "Seu perfil não pode editar paradas de viagem." as const };
   }
 
@@ -124,3 +124,40 @@ export async function reorderTripStops(_previous: TripActionState, formData: For
 
 
 
+const MANAGE_MESSAGES: Record<string, string> = {
+  reason_required: "Informe o motivo (até 500 caracteres).",
+  stop_in_service: "Há uma parada em atendimento. Aguarde o motorista concluir antes de pausar.",
+  trip_already_started: "A viagem já começou a ser executada. Não é possível cancelar ou reatribuir; use a pausa ou o transbordo.",
+  driver_required: "Selecione o novo motorista.",
+  driver_unavailable: "O motorista escolhido não está ativo nesta empresa.",
+  vehicle_unavailable: "O veículo escolhido não está disponível.",
+  forbidden: "Seu perfil não pode alterar viagens.",
+  trip_not_found: "Viagem não encontrada.",
+};
+
+export async function manageTripAction(_previous: TripActionState, formData: FormData): Promise<TripActionState> {
+  const tripId = text(formData.get("trip_id"));
+  const action = text(formData.get("action"));
+  const reason = text(formData.get("reason"));
+  const driverId = text(formData.get("driver_id"));
+  if (!["pause", "resume", "cancel", "reassign"].includes(action)) return { error: "Ação inválida.", success: null };
+  if (action !== "resume" && (!reason || reason.length > 500)) return { error: MANAGE_MESSAGES.reason_required, success: null };
+  if (action === "reassign" && !UUID.test(driverId)) return { error: MANAGE_MESSAGES.driver_required, success: null };
+
+  const auth = await authorizeTrip(tripId);
+  if (auth.error) return { error: auth.error, success: null };
+
+  const { error } = await auth.supabase.rpc("manage_trip", {
+    p_trip_id: tripId, p_action: action, p_reason: reason || null, p_driver_id: action === "reassign" ? driverId : null,
+  });
+  if (error) {
+    const code = error.message.split(":")[0]?.trim() ?? "";
+    if (code === "invalid_trip_state") return { error: "A viagem não permite esta ação no estado atual. Atualize a página.", success: null };
+    return { error: MANAGE_MESSAGES[code] ?? "Não foi possível alterar a viagem. Atualize a página e tente novamente.", success: null };
+  }
+  revalidatePath("/painel/viagens/" + tripId);
+  revalidatePath("/painel/despacho");
+  revalidatePath("/painel/paradas");
+  const done: Record<string, string> = { pause: "Viagem pausada.", resume: "Viagem retomada.", cancel: "Viagem cancelada; as paradas voltaram para a fila de despacho.", reassign: "Viagem reatribuída ao novo motorista." };
+  return { error: null, success: done[action] };
+}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { DivIcon, Map as LeafletMap, Marker as LeafletMarker } from "leaflet";
 
 import styles from "./control.module.css";
+import { addOpenFreeMapLayer } from "../../../lib/maps/openfreemap";
 
 type DriverPoint = { name: string; vehicle: string; status: "route" | "delayed"; lat: number; lng: number };
 type SelectedPoint = { lat: number; lng: number; source: "map" | "gps"; accuracy: number | null };
@@ -13,10 +14,6 @@ const drivers: DriverPoint[] = [
   { name: "Marcos Santos", vehicle: "JKT-9A12", status: "delayed", lat: -23.6354, lng: -46.7668 },
   { name: "João Pereira", vehicle: "RXP-2C51", status: "route", lat: -23.6188, lng: -46.7441 },
 ];
-
-const tileUrl = process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-const tileAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION ||
-  '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>';
 
 export function InteractiveMap() {
   const [selected, setSelected] = useState<SelectedPoint | null>(null);
@@ -34,17 +31,20 @@ export function InteractiveMap() {
     let active = true;
     let map: LeafletMap | null = null;
 
-    void import("leaflet").then((L) => {
+    void import("leaflet").then(async (L) => {
       if (!active) return;
 
       map = L.map(element, { zoomControl: true, scrollWheelZoom: true }).setView([-23.627, -46.757], 14);
       mapRef.current = map;
 
-      L.tileLayer(tileUrl, { maxZoom: 19, attribution: tileAttribution })
-        .on("tileerror", () => {
+      try {
+        await addOpenFreeMapLayer(map, () => {
           if (active) setMapError("O mapa base não respondeu. As coordenadas e os marcadores GPS continuam disponíveis.");
-        })
-        .addTo(map);
+        }, () => active);
+      } catch {
+        if (active) setMapError("Não foi possível carregar o mapa. As coordenadas e os marcadores GPS continuam disponíveis.");
+      }
+      if (!active) return;
 
       selectionIconRef.current = L.divIcon({
         className: "",

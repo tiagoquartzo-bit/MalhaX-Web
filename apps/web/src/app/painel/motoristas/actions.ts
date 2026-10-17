@@ -56,6 +56,8 @@ function inviteFailureMessage(code: string | null): string {
       return "O serviço de convites ainda não está configurado no Supabase. O administrador precisa revisar as configurações de e-mail e do aplicativo.";
     case "existing_account":
       return "Este e-mail já tem uma conta MalhaX. Peça ao administrador para revisar o vínculo antes de enviar outro convite.";
+    case "invite_rolled_back":
+      return "O cadastro do motorista não foi concluído e o convite foi cancelado automaticamente. Nenhuma conta ficou ativa; você pode reenviar o convite.";
     case "invite_provisioning_failed":
       return "O convite começou, mas o cadastro não foi concluído. Não reenvie agora; peça ao suporte para revisar o acesso do motorista.";
     case "invite_not_sent":

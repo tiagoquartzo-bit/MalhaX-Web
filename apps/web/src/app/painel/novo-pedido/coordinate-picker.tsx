@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CircleMarker, Map as LeafletMap } from "leaflet";
 
 import styles from "./coordinate-picker.module.css";
+import { addOpenFreeMapLayer } from "../../../lib/maps/openfreemap";
 
 type Props = {
   latitude: string;
@@ -17,6 +18,7 @@ export function CoordinatePicker({ latitude, longitude, onSelect }: Props) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
   const mapElement = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<LeafletMap | null>(null);
   const markerRef = useRef<CircleMarker | null>(null);
   const onSelectRef = useRef(onSelect);
 
@@ -53,7 +55,7 @@ export function CoordinatePicker({ latitude, longitude, onSelect }: Props) {
     let active = true;
     let map: LeafletMap | null = null;
 
-    void import("leaflet").then((L) => {
+    void import("leaflet").then(async (L) => {
       if (!active || !mapElement.current) return;
       const parsedLat = Number(latitude.replace(",", "."));
       const parsedLng = Number(longitude.replace(",", "."));
@@ -63,13 +65,15 @@ export function CoordinatePicker({ latitude, longitude, onSelect }: Props) {
       const center: [number, number] = hasPoint ? [parsedLat, parsedLng] : CAMPO_LIMPO;
 
       map = L.map(mapElement.current, { scrollWheelZoom: true }).setView(center, hasPoint ? 17 : 14);
-      L.tileLayer(process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: process.env.NEXT_PUBLIC_MAP_ATTRIBUTION ||
-          '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
-      }).on("tileerror", () => {
-        if (active) setMessage("O mapa não carregou. O endereço continua salvo e pode ser usado para navegar.");
-      }).addTo(map);
+      mapRef.current = map;
+      try {
+        await addOpenFreeMapLayer(map, () => {
+          if (active) setMessage("O mapa não carregou. O endereço continua salvo e pode ser usado para navegar.");
+        }, () => active);
+      } catch {
+        if (active) setMessage("Não foi possível carregar o mapa. Confira a conexão.");
+      }
+      if (!active || !map) return;
 
       if (hasPoint) {
         markerRef.current = L.circleMarker(center, {
@@ -96,6 +100,7 @@ export function CoordinatePicker({ latitude, longitude, onSelect }: Props) {
       active = false;
       map?.off();
       map?.remove();
+      if (mapRef.current === map) mapRef.current = null;
       markerRef.current = null;
     };
   }, [open]);

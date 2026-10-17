@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./tracking-history.module.css";
+import { addOpenFreeMapLayer } from "../../../lib/maps/openfreemap";
 
 export type TrackingPoint = {
   driverId: string; driverName: string; tripId: string; tripNumber: number;
@@ -35,14 +36,16 @@ export function TrackingHistory({ date, selectedDriver, drivers, points }: { dat
     let map: import("leaflet").Map | null = null;
     let layers: import("leaflet").LayerGroup | null = null;
     if (!mapElement.current || points.length === 0) return;
-    void import("leaflet").then((L) => {
+    void import("leaflet").then(async (L) => {
       if (!active || !mapElement.current) return;
       map = L.map(mapElement.current, { scrollWheelZoom: true }).setView([points[0].latitude, points[0].longitude], 14);
       layers = L.layerGroup().addTo(map);
-      L.tileLayer(process.env.NEXT_PUBLIC_MAP_TILE_URL || "https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        maxZoom: 19,
-        attribution: process.env.NEXT_PUBLIC_MAP_ATTRIBUTION || '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a>',
-      }).on("tileerror", () => active && setMapError("O mapa base não respondeu; os registros e a exportação CSV continuam disponíveis.")).addTo(map);
+      try {
+        await addOpenFreeMapLayer(map, () => active && setMapError("O mapa base não respondeu; os registros e a exportação CSV continuam disponíveis."), () => active);
+      } catch {
+        if (active) setMapError("Não foi possível carregar o mapa. Os registros e a exportação CSV continuam disponíveis.");
+      }
+      if (!active) return;
 
       groups.forEach((group, index) => {
         const route = group.rows;
@@ -83,7 +86,7 @@ export function TrackingHistory({ date, selectedDriver, drivers, points }: { dat
 
   return <>
     <form method="get" className={styles.filters}>
-      <label>Dia<input type="date" name="date" value={date} required /></label>
+      <label>Dia<input type="date" name="date" defaultValue={date} key={date} required /></label>
       <label>Motorista<select name="driver" defaultValue={selectedDriver}><option value="">Todos com registros</option>{drivers.map((driver) => <option value={driver.id} key={driver.id}>{driver.name}</option>)}</select></label>
       <button type="submit" className={styles.secondary}>Consultar</button>
       <button type="button" onClick={downloadCsv} disabled={!points.length} className={styles.export}>Baixar CSV ({points.length})</button>

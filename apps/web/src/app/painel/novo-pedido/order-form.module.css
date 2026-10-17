@@ -105,3 +105,7 @@
 .moveButton:disabled { opacity: .45; cursor: not-allowed; }
 @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } .cardHeading, .submitRow { align-items: flex-start; flex-direction: column; } .submitButton { width: 100%; } .volume, .stop { padding: .85rem; } }
 @media (max-width: 700px) { .stepNav { align-items: stretch; flex-direction: column; } .stepCount { margin: .25rem 0 0; } .stepActions { align-items: stretch; flex-direction: column; } .stepActions .submitButton, .stepActions .backButton { width: 100%; } .searchRow, .assignmentFields, .reviewGrid { grid-template-columns: 1fr; flex-direction: column; } .searchRow button { width: 100%; } .subsectionHeading, .stopSequence { align-items: flex-start; flex-direction: column; } }
+
+.optionalDetails { margin-top: .4rem; border: 1px dashed #24405a; border-radius: .7rem; padding: .55rem .8rem; }
+.optionalDetails summary { cursor: pointer; color: #7fe5ee; font-size: .82rem; font-weight: 700; }
+.optionalDetails[open] summary { margin-bottom: .7rem; }

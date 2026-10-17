@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { ConviteMotoristaForm, DriverStatusForm } from "./forms";
 import styles from "./drivers.module.css";
 import { DriverContact } from "../DriverContact";
@@ -34,8 +35,7 @@ export default async function MotoristasPage({ searchParams }: { searchParams: P
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: roleRows } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  const roles = (roleRows ?? []).map(({ role }) => String(role));
+  const { roles } = await getCurrentOrganizationRoles(supabase, user.id);
   if (!roles.some((role) => VIEW_ROLES.has(role))) redirect("/painel");
   const canInvite = roles.some((role) => INVITE_ROLES.has(role));
   const canManageStatus = roles.some((role) => ["admin", "manager", "support"].includes(role));

@@ -105,7 +105,14 @@ Deno.serve(async (request: Request) => {
       userId: inviteData.user.id,
       code: provisionError?.code,
     });
-    return json(500, { error: "invite_provisioning_failed" });
+    // Desfaz a conta recém-criada pelo convite: o link enviado deixa de valer e o
+    // gestor pode reenviar o convite sem deixar uma conta órfã sem vínculo.
+    const { error: rollbackError } = await adminClient.auth.admin.deleteUser(inviteData.user.id);
+    if (rollbackError) {
+      console.error("driver_invite_rollback_failed", { userId: inviteData.user.id, code: rollbackError.code });
+      return json(500, { error: "invite_provisioning_failed" });
+    }
+    return json(500, { error: "invite_rolled_back" });
   }
 
   return json(202, { status: "invitation_sent", driver_id: driverId });

@@ -3,10 +3,13 @@
 ## Aplicações
 
 - **Painel web:** operações, cadastro e aprovação de motoristas, despacho, acompanhamento ao vivo, suporte, comprovantes e indicadores.
+- **Experiência do backoffice:** há uma única aplicação web autenticada. Gestor, equipe de backoffice e suporte navegam pelos módulos da mesma interface; visão gerencial, operação ao vivo, atendimento e gestão de motoristas são seções do mesmo produto, não painéis ou sistemas independentes. A equipe pode chamar ou enviar WhatsApp ao motorista quando o telefone estiver cadastrado; conversas iniciadas pelo app ficam no inbox compartilhado.
 - **Android:** viagens atribuídas, lista ordenada de paradas, navegação externa, leitura de códigos, execução de coleta/entrega, ocorrências e sincronização offline.
 - **Backend:** Supabase (PostgreSQL, Auth, Storage privado e Realtime). Operações sensíveis passam por funções/RPC no servidor; o cliente não recebe `service_role`.
-- **Organizações:** `organizations` representa a empresa/tenant. A Activia é a primeira organização (`slug=activia`). Papéis e dados operacionais são limitados a ela via membership e RLS.
+- **Plataforma e empresas:** MalhaX é o produto/plataforma. Cada cliente é uma organização/tenant em `organizations`, com usuários, dados e permissões isolados por membership e RLS. Activia é o primeiro tenant cadastrado (`slug=activia`), não a marca do sistema. O acesso a módulos deve ser configurável por tenant (por exemplo, Activia com roteiro); essa camada de licenças/recursos ainda precisa ser implementada antes de comercializar módulos diferentes.
 - **Compartilhado:** tipos de API, enums e validações sem segredos em `packages/shared`.
+
+Perfis de analista e assistente precisam de permissões somente leitura definidas antes de serem atribuídos. As roles atualmente modeladas são admin, manager, dispatcher, support, driver e finance; não conceder acesso operacional amplo a novos usuários sem atualizar a matriz de autorização e as políticas RLS.
 
 ## Fluxo operacional
 
@@ -34,6 +37,6 @@ Realtime serve para refletir novos eventos e posição recente no painel. A tela
 - Upload de arquivo usa caminho associado ao pedido/parada, validação de tamanho/tipo e confirmação de conclusão antes de encerrar a entrega.
 - Índices e restrições no banco protegem atribuições, códigos únicos e transições válidas.
 - Backup, restauração e alertas operacionais devem ser configurados no ambiente Supabase antes da produção.
-- A migration `202610060004_organizations_activia.sql` está preparada, ainda não aplicada a um banco Supabase.
+- A migration `202610060004_organizations_activia.sql` está aplicada no Supabase local. Nenhuma migration foi aplicada em banco Supabase hospedado.
 
 

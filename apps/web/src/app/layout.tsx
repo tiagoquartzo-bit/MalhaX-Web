@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "@fontsource-variable/inter/wght.css";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
 export const metadata: Metadata = {
   title: "MalhaX · Logística e tecnologia",

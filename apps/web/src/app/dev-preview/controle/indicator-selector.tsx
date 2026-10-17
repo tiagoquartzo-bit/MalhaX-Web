@@ -47,7 +47,7 @@ export function IndicatorSelector({ indicators }: { indicators: Indicator[] }) {
       <div className={styles.metricContent}>
         <div className={styles.metricContext}>
           <span>{visible.length} indicador{visible.length === 1 ? "" : "es"} selecionado{visible.length === 1 ? "" : "s"}</span>
-          <small>Hoje · todas as equipes · demonstração</small>
+          <small>Todas as equipes · dados demonstrativos</small>
         </div>
         {visible.length ? (
           <div className={styles.kpiGrid}>

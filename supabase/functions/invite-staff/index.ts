@@ -82,7 +82,12 @@ Deno.serve(async (request: Request) => {
   });
   if (provisionError) {
     console.error("staff_invite_provision_failed", { userId: inviteData.user.id, role, code: provisionError.code });
-    return json(500, { error: "invite_provisioning_failed" });
+    const { error: rollbackError } = await admin.auth.admin.deleteUser(inviteData.user.id);
+    if (rollbackError) {
+      console.error("staff_invite_rollback_failed", { userId: inviteData.user.id, code: rollbackError.code });
+      return json(500, { error: "invite_provisioning_failed" });
+    }
+    return json(500, { error: "invite_rolled_back" });
   }
   return json(202, { status: "invitation_sent", role });
 });

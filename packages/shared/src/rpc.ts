@@ -62,11 +62,13 @@ export type RecordStopEventArgs = {
 export type RegisterDeliveryProofArgs = {
   p_stop_id: string;
   p_storage_path: string;
+  p_location_storage_path: string;
   p_recipient_name: string;
   p_captured_at_device: string;
-  p_latitude: number;
-  p_longitude: number;
-  p_location_accuracy_meters: number;
+  p_location_captured_at_device: string | null;
+  p_latitude: number | null;
+  p_longitude: number | null;
+  p_location_accuracy_meters: number | null;
   /** Null indica evidência que cobre a parada inteira. */
   p_package_id?: string | null;
 };

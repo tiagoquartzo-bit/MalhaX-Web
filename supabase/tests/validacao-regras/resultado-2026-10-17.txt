@@ -1,0 +1,134 @@
+  n  | resultado |     area     |                                        caso                                        |                                           obtido                                           
+-----+-----------+--------------+------------------------------------------------------------------------------------+--------------------------------------------------------------------------------------------
+   1 | OK        | 1 Cadastros  | Gestor cadastra cliente                                                            | 5e0d50d4-33a4-4819-9657-deb2f37b834c
+   2 | OK        | 1 Cadastros  | Repetir cadastro com mesmo request_id devolve o mesmo cliente (idempotência)       | true
+   3 | OK        | 1 Cadastros  | Motorista não pode cadastrar cliente                                               | ERRO: forbidden
+   4 | OK        | 1 Cadastros  | Gestor cadastra veículo                                                            | 76b692cc-6c51-4fa8-9988-d851d0e9cc04
+   5 | OK        | 1 Cadastros  | Gestor cadastra moto com capacidade de 5 kg                                        | 35d8277b-ca9b-4e37-87ea-c877879b36b5
+   6 | OK        | 1 Cadastros  | Capacidade inválida (zero) é recusada                                              | ERRO: invalid_vehicle_data
+   7 | OK        | 1 Cadastros  | Veículo tem capacidade numérica (kg) para validar peso                             | 1500.00
+   8 | OK        | 2 Pedido     | Gestor cria pedido com 2 volumes, 1 coleta e 2 entregas                            | f6e4384e-6c7a-45dd-bb9d-18c277d8e8ac
+   9 | OK        | 2 Pedido     | Cada volume recebe código único e aleatório                                        | 2 códigos; exemplo 69911b945c7a00838ac11671
+  10 | OK        | 2 Pedido     | Pedido nasce "aguardando despacho" e paradas pendentes                             | pending_dispatch/pending_dispatch
+  11 | OK        | 2 Pedido     | Reenvio idêntico não duplica pedido                                                | true
+  12 | OK        | 2 Pedido     | Mesmo request_id com dados diferentes é recusado                                   | ERRO: request_id_conflict
+  13 | OK        | 2 Pedido     | Suporte não cria pedido                                                            | ERRO: forbidden
+  14 | OK        | 2 Pedido     | Despachante não informa frete/repasse                                              | ERRO: forbidden_financial_values
+  15 | OK        | 2 Pedido     | Volume com quantidade 2 é recusado (1 código = 1 peça)                             | ERRO: one_package_record_per_physical_unit
+  16 | OK        | 2 Pedido     | Parada sem volume é recusada                                                       | ERRO: stop_packages_required
+  17 | OK        | 2 Pedido     | Volume sem coleta/entrega é recusado                                               | ERRO: package_without_order_task
+  18 | OK        | 2 Pedido     | Pedido sem peso do volume é recusado                                               | ERRO: package_weight_required
+  19 | OK        | 2 Pedido     | Parada sem coordenadas é recusada                                                  | ERRO: stop_coordinates_required
+  20 | OK        | 2 Pedido     | Volume sem coleta prevista (só entrega) é recusado                                 | ERRO: package_requires_one_pickup_and_one_delivery
+  21 | OK        | 3 Isolamento | Gestor de outra empresa não usa cliente da Activia                                 | ERRO: client_unavailable
+  22 | OK        | 3 Isolamento | Gestor de outra empresa não vê pedidos da Activia                                  | 0
+  23 | OK        | 3 Isolamento | Gestor de outra empresa não vê volumes/paradas da Activia                          | 0
+  24 | OK        | 3 Isolamento | Conta sem papel não vê pedidos                                                     | 0
+  25 | OK        | 3 Isolamento | Motorista não vê pedidos não atribuídos a ele                                      | 0
+  26 | OK        | 3 Isolamento | Suporte vê pedidos da própria empresa                                              | true
+  27 | OK        | 3 Isolamento | Suporte (sem papel financeiro) não lê frete                                        | ERRO: permission denied for table orders
+  28 | OK        | 4 Despacho   | Despacho com motorista pendente de aprovação é recusado                            | ERRO: driver_unavailable
+  29 | OK        | 4 Despacho   | Despacho com motorista de outra empresa é recusado                                 | ERRO: driver_unavailable
+  30 | OK        | 4 Despacho   | Despacho com entrega antes da coleta é recusado                                    | ERRO: pickup_must_precede_delivery
+  31 | OK        | 4 Despacho   | Entrega sem a coleta na viagem (coleta ainda não feita) é recusada                 | ERRO: pickup_must_precede_delivery
+  32 | OK        | 4 Despacho   | Carga acima da capacidade do veículo é recusada (6,5 kg na moto de 5 kg)           | ERRO: vehicle_capacity_exceeded: 6.500 kg > 5.00 kg
+  33 | OK        | 4 Despacho   | Previsões fora de ordem são recusadas                                              | ERRO: planned_at_out_of_order
+  34 | OK        | 5 Fluxo      | Gestor cria pedido 2                                                               | e75bcc66-7710-40bd-afbf-3c78b9231a99
+  35 | OK        | 5 Fluxo      | Despachante monta viagem coleta→B→C com caminhão e previsão por parada             | 31bc40d7-ca22-4613-b990-5b1d32b6a532
+  36 | OK        | 5 Fluxo      | Após despacho: viagem atribuída, paradas atribuídas, pedido planejado              | assigned/assigned/planned
+  37 | OK        | 5 Fluxo      | Previsão gravada em todas as paradas                                               | 3/3
+  38 | OK        | 5 Fluxo      | Mesmas paradas não podem ser despachadas duas vezes                                | ERRO: order_stop_not_dispatchable
+  39 | OK        | 5 Fluxo      | Motorista2 não aceita viagem do motorista1                                         | ERRO: trip_not_found
+  40 | OK        | 5 Fluxo      | Motorista2 não enxerga viagem do motorista1                                        | 0
+  41 | OK        | 5 Fluxo      | Motorista1 enxerga a viagem, as 3 paradas e os volumes                             | 1/3/4
+  42 | OK        | 5 Fluxo      | Executar parada sem aceitar a viagem é recusado                                    | ERRO: trip_not_accepted
+  43 | OK        | 5 Fluxo      | Iniciar viagem sem aceitar é recusado                                              | ERRO: trip_not_accepted
+  44 | OK        | 5 Fluxo      | Motorista1 aceita a viagem                                                         | accepted
+  45 | OK        | 5 Fluxo      | Motorista1 inicia a viagem (sai para a 1ª coleta)                                  | in_progress
+  46 | OK        | 5 Fluxo      | GPS a caminho da 1ª parada é gravado                                               | 2ba9710c-8135-4a4b-867a-7aad80af932a
+  47 | OK        | 5 Fluxo      | Transição inválida (pendente→concluída) é recusada                                 | ERRO: invalid_transition: pending -> completed
+  48 | OK        | 5 Fluxo      | Chegada na coleta                                                                  | arrived
+  49 | OK        | 5 Fluxo      | Reenvio do mesmo evento (offline) não duplica                                      | arrived
+  50 | OK        | 5 Fluxo      | … e só existe 1 evento gravado                                                     | 1
+  51 | OK        | 5 Fluxo      | Concluir coleta sem conferir os códigos é recusado                                 | ERRO: package_check_required
+  52 | OK        | 5 Fluxo      | Código que não pertence à parada é recusado                                        | ERRO: package_not_expected_at_stop: codigo-inexistente
+  53 | OK        | 5 Fluxo      | Conferir só 1 dos 2 volumes ainda bloqueia a conclusão                             | 1
+  54 | OK        | 5 Fluxo      | … conclusão recusada com volume faltando                                           | ERRO: package_check_required
+  55 | OK        | 5 Fluxo      | Conferir todos os volumes (maiúsculas/espaços aceitos)                             | 2
+  56 | OK        | 5 Fluxo      | Coleta concluída                                                                   | completed
+  57 | OK        | 5 Fluxo      | Volumes ficam "coletados"                                                          | picked_up
+  58 | OK        | 5 Fluxo      | Pedido fica "em andamento"                                                         | in_progress
+  59 | OK        | 5 Fluxo      | Chegada na entrega B                                                               | arrived
+  60 | OK        | 5 Fluxo      | Conferência do volume da entrega B                                                 | 1
+  61 | OK        | 5 Fluxo      | Entrega sem comprovante é bloqueada                                                | ERRO: delivery_proof_required
+  62 | OK        | 5 Fluxo      | Comprovante sem a foto enviada é recusado                                          | ERRO: proof_file_not_uploaded
+  63 | OK        | 5 Fluxo      | Comprovante só com a foto da mercadoria (sem fachada) é recusado                   | ERRO: location_photo_storage_path_invalid
+  64 | OK        | 5 Fluxo      | Comprovante sem nome do recebedor é recusado                                       | ERRO: recipient_name_required
+  65 | OK        | 5 Fluxo      | GPS incompleto (lat sem precisão) é recusado                                       | ERRO: proof_gps_fields_incomplete
+  66 | OK        | 5 Fluxo      | Comprovante com 2 fotos + recebedor, sem GPS, é aceito (GPS opcional)              | 0bdcb29f-fdd1-41f7-a21e-8e841f214470
+  67 | OK        | 5 Fluxo      | Entrega B concluída                                                                | completed
+  68 | OK        | 5 Fluxo      | Volume 1 fica "entregue"                                                           | delivered
+  69 | OK        | 5 Fluxo      | Falha na entrega C sem motivo é recusada                                           | ERRO: reason_required
+  70 | OK        | 5 Fluxo      | Falha na entrega C com motivo é aceita (sem exigir conferência)                    | failed
+  71 | OK        | 5 Fluxo      | Viagem concluída, pedido em exceção, tarefa C de volta à fila, volume 2 em exceção | completed/exception/exception/exception
+  72 | OK        | 5 Fluxo      | GPS depois do fim da viagem é recusado                                             | ERRO: tracking_timestamp_outside_trip
+  73 | OK        | 5 Fluxo      | Reentrega: tarefa C em nova viagem (coleta já feita na viagem anterior)            | 8f57758a-7cb5-4803-981c-af95370ee859
+  74 | OK        | 5 Fluxo      | Tentativa registrada como 2                                                        | 2
+  75 | OK        | 5 Fluxo      | Tentativa 2: aceitar, chegar e conferir                                            | accepted/arrived/1
+  76 | OK        | 5 Fluxo      | Tentativa 2: comprovante com GPS e conclusão                                       | true/completed
+  77 | OK        | 5 Fluxo      | Pedido 2 concluído                                                                 | completed
+  78 | OK        | 6 Ordem      | Despacho correto coleta→B do pedido 1                                              | f1d0f65d-8a2a-4581-8fb2-ad02d6e73e5d
+  79 | OK        | 6 Ordem      | Motorista2 aceita e vai direto à entrega (pula a coleta)                           | accepted/arrived/1
+  80 | OK        | 6 Ordem      | Comprovante registrado na entrega                                                  | f71ae3a1-9395-4c29-b437-89b793bbe423
+  81 | OK        | 6 Ordem      | Concluir entrega antes da coleta do mesmo volume é bloqueado                       | ERRO: pickup_required_before_delivery
+  82 | OK        | 6 Ordem      | Volume continua "esperado"                                                         | expected
+  83 | OK        | 7 Arquivos   | Motorista2 não envia foto na pasta de viagem do motorista1                         | ERRO: new row violates row-level security policy for table "objects"
+  84 | OK        | 7 Arquivos   | Motorista2 não lê comprovantes do motorista1                                       | 0
+  85 | OK        | 7 Arquivos   | Suporte lê comprovantes da empresa                                                 | 1
+  86 | OK        | 7 Arquivos   | Gestor de outra empresa não lê comprovantes                                        | 0
+  87 | OK        | 7 Arquivos   | Bucket de comprovantes é privado                                                   | false
+  88 | OK        | 8 Motoristas | Suspender motorista com viagem ativa é bloqueado                                   | ERRO: driver_has_active_trip
+  89 | OK        | 8 Motoristas | Mudar status sem justificativa é recusado                                          | ERRO: reason_required
+  90 | OK        | 8 Motoristas | Ativação exige e-mail confirmado                                                   | ERRO: driver_email_not_confirmed
+  91 | OK        | 8 Motoristas | Suporte aprova motorista pendente com justificativa (e-mail confirmado)            | 98f57a2d-d920-4b8b-9271-aa44a597639c
+  92 | OK        | 8 Motoristas | Alteração de status fica na auditoria                                              | driver_status_changed: {"to_status": "active", "from_status": "pending_review", "organizat
+  93 | OK        | 8 Motoristas | Motorista não altera o próprio status                                              | ERRO: forbidden
+  94 | OK        | 8 Motoristas | Motorista não pode ser apagado com histórico                                       | ERRO: permission denied for table drivers
+  95 | OK        | 9 Ajustes    | Gestor cria pedido 3                                                               | 21735b1a-6e46-45b9-8297-9589c89896a2
+  96 | OK        | 9 Ajustes    | Despacho coleta→entrega para motorista1                                            | 0c28f104-7989-466f-8d56-e3f1e8c784d4
+  97 | OK        | 9 Ajustes    | Reordenar para entrega antes da coleta é bloqueado                                 | ERRO: pickup_must_precede_delivery
+  98 | OK        | 9 Ajustes    | Cancelar pedido já despachado é recusado                                           | ERRO: order_already_in_execution
+  99 | OK        | 9 Ajustes    | Reatribuir sem motivo é recusado                                                   | ERRO: reason_required
+ 100 | OK        | 9 Ajustes    | Reatribuir viagem para outro motorista                                             | assigned
+ 101 | OK        | 9 Ajustes    | Motorista anterior perde o acesso à viagem                                         | 0
+ 102 | OK        | 9 Ajustes    | Novo motorista enxerga a viagem                                                    | 1
+ 103 | OK        | 9 Ajustes    | Reatribuição fica na auditoria com o motorista anterior                            | true
+ 104 | OK        | 9 Ajustes    | Novo motorista aceita e inicia                                                     | accepted/in_progress
+ 105 | OK        | 9 Ajustes    | Gestor pausa a viagem com motivo                                                   | paused
+ 106 | OK        | 9 Ajustes    | Motorista não executa parada com viagem pausada                                    | ERRO: trip_not_active: paused
+ 107 | OK        | 9 Ajustes    | Gestor retoma a viagem                                                             | in_progress
+ 108 | OK        | 9 Ajustes    | Despachante cancela a viagem (nenhuma parada iniciada)                             | cancelled
+ 109 | OK        | 9 Ajustes    | Paradas da viagem cancelada voltam para a fila de despacho                         | pending_dispatch/pending_dispatch
+ 110 | OK        | 9 Ajustes    | Suporte não pode cancelar viagem                                                   | ERRO: forbidden
+ 111 | OK        | 9 Ajustes    | Viagem já iniciada não pode ser cancelada                                          | ERRO: trip_already_started
+ 112 | OK        | 9 Ajustes    | Cancelar pedido na fila (não executado) com motivo                                 | cancelled
+ 113 | OK        | 9 Ajustes    | Tarefas do pedido cancelado saem da fila                                           | cancelled
+ 114 | OK        | 9 Ajustes    | Cancelamento do pedido fica na auditoria                                           | Cliente desistiu
+ 115 | OK        | 10 Veículos  | Editar veículo sem motivo é recusado                                               | ERRO: reason_required
+ 116 | OK        | 10 Veículos  | Gestor atualiza capacidade do caminhão para 1.600 kg                               | 76b692cc-6c51-4fa8-9988-d851d0e9cc04
+ 117 | OK        | 10 Veículos  | Capacidade gravada e alteração na auditoria                                        | 1600.00/1
+ 118 | OK        | 10 Veículos  | Capacidade zero é recusada na edição                                               | ERRO: invalid_vehicle_data
+ 119 | OK        | 10 Veículos  | Motorista não edita veículo                                                        | ERRO: forbidden
+ 120 | OK        | 10 Veículos  | Gestor de outra empresa não edita veículo da Activia                               | ERRO: vehicle_not_found
+ 121 | OK        | 10 Veículos  | Pedido leve (2 kg) e pedido pesado (10 kg)                                         | true
+ 122 | OK        | 10 Veículos  | … pedido pesado                                                                    | 7d3efef3-8f99-47eb-9f90-fac166464fe8
+ 123 | OK        | 10 Veículos  | Viagem da moto com o pedido leve                                                   | ERRO: driver_unavailable
+ 124 | OK        | 10 Veículos  | … com motorista da Activia                                                         | fe5262a6-2382-4f08-83d9-e0fd1fdd76c5
+ 125 | OK        | 10 Veículos  | Incluir coleta de 10 kg na moto (limite 5 kg) é recusado                           | ERRO: vehicle_capacity_exceeded: 12.000 kg > 5.00 kg
+ 126 | OK        | 10 Veículos  | Desativar veículo com viagem ativa é recusado                                      | ERRO: vehicle_has_active_trip
+ 127 | OK        | 10 Veículos  | Aumentar a capacidade da moto para 20 kg                                           | 35d8277b-ca9b-4e37-87ea-c877879b36b5
+ 128 | OK        | 10 Veículos  | Agora a coleta de 10 kg entra na viagem                                            | true
+ 129 | OK        | 10 Veículos  | Parada incluída recebe previsão automática (20 min após a última)                  | 00:20:00
+(129 rows)
+
+129 ok, 0 falhas de 129

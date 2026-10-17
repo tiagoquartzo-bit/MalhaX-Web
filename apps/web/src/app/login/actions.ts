@@ -40,7 +40,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
   }
 
   if (hasBackofficeAccess(access.roles)) {
-    redirect(process.env.NODE_ENV === "development" ? "/dev-preview/controle" : "/controle");
+    redirect("/painel");
   }
 
   if (access.roles.includes("driver")) {

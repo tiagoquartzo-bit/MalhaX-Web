@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "../../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../../lib/supabase/organization-roles";
 import { TripStopControls } from "./controls";
+import { TripManagement } from "./management";
 import styles from "./trip.module.css";
 
 type Trip = {
@@ -11,7 +13,7 @@ type Trip = {
 type Stop = {
   id: string; sequence_number: number; stop_type: string; status: string;
   address_label: string; address_line: string; city: string | null;
-  arrived_at: string | null; completed_at: string | null; failure_reason: string | null;
+  planned_at: string | null; arrived_at: string | null; completed_at: string | null; failure_reason: string | null;
 };
 type Task = {
   id: string; order_id: string; stop_type: string; address_label: string;
@@ -47,21 +49,21 @@ export default async function TripDetailPage({ params }: { params: Promise<{ tri
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const [{ data: roleRows }, { data: tripData }] = await Promise.all([
-    supabase.from("organization_member_roles").select("role").eq("user_id", user.id),
+  const [roleAccess, { data: tripData }] = await Promise.all([
+    getCurrentOrganizationRoles(supabase, user.id),
     supabase.from("trips")
       .select("id, trip_number, driver_id, vehicle_id, status, planned_start_at, started_at, completed_at")
       .eq("id", tripId).maybeSingle(),
   ]);
   if (!tripData) notFound();
   const trip = tripData as Trip;
-  const roles = (roleRows ?? []).map((row) => String(row.role));
+  const roles = roleAccess.roles;
   const canManage = roles.some((role) => EDIT_ROLES.includes(role));
   const canReorderStatus = ["assigned", "accepted"].includes(trip.status);
 
   const [{ data: stopData }, { data: driverData }, vehicleResult] = await Promise.all([
     supabase.from("trip_stops")
-      .select("id, sequence_number, stop_type, status, address_label, address_line, city, arrived_at, completed_at, failure_reason")
+      .select("id, sequence_number, stop_type, status, address_label, address_line, city, planned_at, arrived_at, completed_at, failure_reason")
       .eq("trip_id", tripId).order("sequence_number", { ascending: true }),
     supabase.from("drivers").select("profile_id").eq("id", trip.driver_id).maybeSingle(),
     trip.vehicle_id
@@ -94,24 +96,32 @@ export default async function TripDetailPage({ params }: { params: Promise<{ tri
     address_line: task.address_line, city: task.city, order_number: orderNumbers.get(task.order_id) ?? null,
   }));
 
+  const { data: driverRows } = canManage
+    ? await supabase.from("drivers").select("id, profile_id").eq("status", "active").limit(250)
+    : { data: [] as Array<{ id: string; profile_id: string | null }> };
+  const driverProfileIds = (driverRows ?? []).flatMap((row) => row.profile_id ? [row.profile_id] : []);
+  const { data: driverProfiles } = driverProfileIds.length
+    ? await supabase.from("profiles").select("id, full_name").in("id", driverProfileIds)
+    : { data: [] as Array<{ id: string; full_name: string }> };
+  const driverNames = new Map((driverProfiles ?? []).map((row) => [row.id, row.full_name]));
+  const activeDrivers = (driverRows ?? []).flatMap((row) => {
+    const name = row.profile_id ? driverNames.get(row.profile_id) : undefined;
+    return name ? [{ id: row.id, name }] : [];
+  });
+
   const vehicle = vehicleResult.data as { plate: string; make_model: string | null } | null;
   const allStopsPending = stops.length > 0 && stops.every((stop) => stop.status === "pending");
   const canEditTrip = canManage && ["assigned", "accepted", "in_progress"].includes(trip.status);
 
   return (
     <main className={styles.page}>
-      <header className={styles.topbar}>
-        <Link className={styles.brand} href="/painel" aria-label="Voltar ao painel MalhaX">
-          <span className={styles.brandMark}>M<span>X</span></span><span>MalhaX <small>OPERAÇÕES</small></span>
-        </Link>
-        <Link className={styles.backLink} href="/painel">← Painel de operações</Link>
-      </header>
       <div className={styles.content}>
+        <p style={{ margin: "8px 0 14px" }}><Link href="/painel/viagens">← Viagens</Link></p>
         <div className={styles.pageHeading}>
           <div>
             <p className={styles.eyebrow}>GESTÃO DE ROTAS</p>
             <h1>Viagem #{trip.trip_number}</h1>
-            <p className={styles.subtitle}>Acompanhe a sequência, o motorista e as ocorrências desta viagem.</p>
+            <p className={styles.subtitle}>{({ assigned: "Aguardando o motorista aceitar no aplicativo.", accepted: "Aceita. Aguardando o motorista tocar em Iniciar viagem.", in_progress: "Em rota. As paradas abaixo são atualizadas pelo aplicativo.", paused: "Pausada pelo gestor. O motorista não consegue executar paradas.", completed: "Viagem concluída.", cancelled: "Viagem cancelada. As paradas pendentes voltaram para o despacho." } as Record<string, string>)[trip.status] ?? "Acompanhe a sequência, o motorista e as ocorrências desta viagem."}</p>
           </div>
           <span className={styles.statusPill + " " + statusClass(trip.status)}>{label(trip.status)}</span>
         </div>
@@ -149,6 +159,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ tri
                     </div>
                     <p className={styles.address}>{stop.address_line}{stop.city ? " · " + stop.city : ""}</p>
                     <div className={styles.stopMeta}>
+                      {stop.planned_at ? <span>Previsão: {dateTime.format(new Date(stop.planned_at))}</span> : null}
                       {stop.arrived_at ? <span>Chegada: {dateTime.format(new Date(stop.arrived_at))}</span> : null}
                       {stop.completed_at ? <span>Finalizada: {dateTime.format(new Date(stop.completed_at))}</span> : null}
                       {stop.failure_reason ? <span className={styles.failureReason}>Motivo: {stop.failure_reason}</span> : null}
@@ -160,10 +171,26 @@ export default async function TripDetailPage({ params }: { params: Promise<{ tri
           ) : <div className={styles.emptyState}>Esta viagem ainda não tem paradas.</div>}
         </section>
 
+        {canManage ? (
+          <section className={styles.panel}>
+            <div className={styles.sectionHeading}>
+              <div><p className={styles.eyebrow}>SITUAÇÃO DA VIAGEM</p><h2>Pausar, cancelar ou trocar o motorista</h2></div>
+            </div>
+            <details>
+              <summary style={{ cursor: "pointer", color: "#7fe5ee", fontWeight: 700 }}>Mostrar ações da viagem</summary>
+              <div style={{ marginTop: "1rem" }}>
+            <TripManagement tripId={tripId} status={trip.status} started={!allStopsPending} drivers={activeDrivers} currentDriverId={trip.driver_id} />
+              </div>
+            </details>
+          </section>
+        ) : null}
+
         <section className={styles.panel}>
           <div className={styles.sectionHeading}>
-            <div><p className={styles.eyebrow}>CONTROLE DO GESTOR</p><h2>Alterações da rota</h2></div>
+            <div><p className={styles.eyebrow}>CONTROLE DO GESTOR</p><h2>Alterar paradas da rota</h2></div>
           </div>
+          <details>
+          <summary style={{ cursor: "pointer", color: "#7fe5ee", fontWeight: 700 }}>Incluir, retirar ou reordenar paradas</summary>
           <div className={styles.syncNotice}>
             As alterações ficam registradas no servidor. O motorista verá a nova sequência quando o aplicativo atualizar a viagem.
           </div>
@@ -183,6 +210,7 @@ export default async function TripDetailPage({ params }: { params: Promise<{ tri
           {canManage && !canEditTrip
             ? <p className={styles.inlineNotice}>Esta viagem está encerrada ou pausada e não aceita alterações.</p>
             : null}
+          </details>
         </section>
       </div>
     </main>

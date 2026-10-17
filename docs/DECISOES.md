@@ -14,7 +14,7 @@ Estas escolhas precisam ser confirmadas com a operação antes do primeiro pilot
 
 ## Decisões já tomadas
 
-- MalhaX é o nome do sistema. Activia será cadastrada como primeira organização/tenant; a identidade visual própria de cada organização será definida depois.
+- MalhaX é a plataforma. Cada empresa cliente será um tenant separado no banco, com usuários e dados isolados; não serão pastas físicas. Activia é um cliente/tenant inicial e deve receber somente o módulo de roteiros contratado. O catálogo de módulos e a concessão de acesso por empresa ainda precisam ser implementados. A marca do painel deve permanecer MalhaX.
 - Contas serão criadas por convite com e-mail. O destinatário confirma pelo link enviado e define a própria senha; não haverá senha enviada por e-mail nem cadastro público aberto.
 - No MVP, o cadastro operacional do motorista exige nome e sobrenome; e-mail é necessário para a conta/convite. Telefone e documentos ficam opcionais.
 - Cada usuário pertence a uma organização no MVP, para manter autorização inequívoca. A estrutura guarda organização nas entidades raiz.

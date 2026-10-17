@@ -19,3 +19,40 @@
 .privateNote { max-width: 260px; font-size: 11px; }
 .empty { padding: 28px !important; color: #64748b; text-align: center; }
 @media (max-width: 700px) { .filters { align-items: stretch; } .filters label, .filters select, .filters input { width: 100%; } .count { margin-left: 0; } }
+
+/* Readable dark operations table matching the rest of the Backoffice. */
+.wrap { color: #dce8f3; }
+.filters { border-color: #20344a; background: #0b1728; }
+.filters label { color: #c7d5e3; }
+.filters input, .filters select { border-color: #2a4058; background: #081321; color: #eef5fb; color-scheme: dark; }
+.count { color: #9aabc0; }
+.tableScroll { border-color: #20344a; background: #0b1728; }
+.table { color: #dce8f3; }
+.table th { border-color: #20344a; background: #102033; color: #c6d7e7; }
+.table td { border-color: #1d3044; }
+.table td small, .history small { color: #9aabc0; }
+.table tbody tr:hover { background: #0e2032; }
+.badge { background: #11283a; color: #b9d7e5; }
+.history summary { color: #62e1ea; }
+.history p, .event time { color: #a0b2c5; }
+.event { border-color: #20344a; }
+.privateNote { color: #9aabc0; }
+.empty { color: #a9bed1; }
+
+/* Central de ocorrências e links de comprovante (recuperados da cópia -GAMER). */
+.proofLink { display: grid; width: min(100%, 220px); gap: 5px; margin-top: 9px; color: #62e1ea; font-size: 11px; font-weight: 700; text-decoration: none; }
+.proofLink:hover { text-decoration: underline; }
+.proofImage { display: block; width: 100%; height: 132px; border: 1px solid #20344a; border-radius: 8px; background: #081321; object-fit: cover; }
+.alertHeader { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px; border: 1px solid #5a4320; border-radius: 12px 12px 0 0; background: #1d1810; }
+.alertHeader div { display: grid; gap: 4px; color: #ffd9a3; }
+.alertHeader small { color: #c9ab83; }
+.alertButton, .selectedView { min-height: 38px; padding: 8px 12px; border: 1px solid #c66d12; border-radius: 8px; background: transparent; color: #ffb866; font: inherit; font-weight: 700; cursor: pointer; }
+.selectedView { border-color: #00c2cb; background: #0c2932; color: #8cecf1; }
+.alertGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; padding: 12px; border: 1px solid #5a4320; border-top: 0; border-radius: 0 0 12px 12px; background: #15130f; }
+.alertCard, .alertCardActive { display: grid; gap: 5px; text-align: left; padding: 12px; border: 1px solid #3d3324; border-radius: 9px; background: #0b1728; color: #e6cfae; font: inherit; cursor: pointer; }
+.alertCard strong, .alertCardActive strong { font-size: 1.4rem; color: #ffb866; }
+.alertCard span, .alertCardActive span { font-size: 12px; }
+.alertCardActive { border-color: #00c2cb; background: #0c2932; color: #8cecf1; }
+.alertCardActive strong { color: #62e1ea; }
+.reason { width: max-content; max-width: 180px; padding: 3px 6px; border-radius: 5px; background: #2c2013; color: #ffc27a !important; font-size: 10px; }
+@media (max-width: 700px) { .alertHeader { align-items: stretch; flex-direction: column; } .alertGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }

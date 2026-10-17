@@ -25,7 +25,9 @@ export function DriverStatusForm({ driverId, options }: { driverId: string; opti
   const [state, formAction, pending] = useActionState(alterarStatusMotorista, inicial);
   if (options.length === 0) return <span className={styles.muted}>Sem ações disponíveis</span>;
   return (
-    <form action={formAction} className={styles.statusForm}>
+    <details>
+    <summary style={{ cursor: "pointer", color: "#7fe5ee", fontSize: ".8rem", fontWeight: 700 }}>Alterar situação</summary>
+    <form action={formAction} className={styles.statusForm} style={{ marginTop: ".5rem" }}>
       <input type="hidden" name="driver_id" value={driverId} />
       <select name="new_status" aria-label="Nova situação do motorista" defaultValue={options[0].value}>
         {options.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
@@ -34,5 +36,6 @@ export function DriverStatusForm({ driverId, options }: { driverId: string; opti
       {state.error ? <p role="alert" className={styles.error}>{state.error}</p> : null}
       <button className={styles.secondaryButton} type="submit" disabled={pending}>{pending ? "Salvando…" : "Registrar alteração"}</button>
     </form>
+    </details>
   );
 }

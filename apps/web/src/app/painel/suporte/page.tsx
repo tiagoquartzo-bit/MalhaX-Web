@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { replySupportMessage } from "./actions";
 import { SupportRealtime } from "./SupportRealtime";
 import { DriverContact } from "../DriverContact";
@@ -14,8 +15,8 @@ export default async function SupportPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: roleRows } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (!(roleRows ?? []).some((row) => ["admin", "manager", "dispatcher", "support"].includes(row.role))) redirect("/painel");
+  const { roles } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (!roles.some((role) => ["admin", "manager", "dispatcher", "support"].includes(role))) redirect("/painel");
 
   const { data: rows, error } = await supabase.from("support_threads")
     .select("id, subject, status, trip_id, updated_at, driver_id, drivers!support_threads_driver_id_fkey(profiles!drivers_profile_id_fkey(full_name, phone))")

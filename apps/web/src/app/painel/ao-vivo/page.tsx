@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { LiveMap, type LiveDriver } from "./live-map";
 import styles from "./live.module.css";
 import { DriverContact } from "../DriverContact";
@@ -15,8 +16,8 @@ export default async function AoVivoPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: roles, error: roleError } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (roleError || !(roles ?? []).some(({ role }) => ROLES.includes(role))) redirect("/painel");
+  const { roles, error: roleError } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (roleError || !roles.some((role) => ROLES.includes(role))) redirect("/painel");
   const { data: tripRows, error } = await supabase.from("trips").select("id, trip_number, driver_id").in("status", ["assigned", "accepted", "in_progress"]).order("created_at", { ascending: false }).limit(300).overrideTypes<Trip[], { merge: false }>();
   const trips = tripRows ?? [];
   const tripIds = trips.map((trip) => trip.id);

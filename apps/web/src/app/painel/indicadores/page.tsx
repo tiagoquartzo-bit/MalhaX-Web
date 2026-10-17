@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import styles from "./indicators.module.css";
 import { IndicatorsDashboard, type IndicatorCard, type MonthData } from "./IndicatorsDashboard";
 
@@ -34,8 +35,8 @@ export default async function IndicadoresPage({ searchParams }: { searchParams: 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: roles, error: roleError } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (roleError || !(roles ?? []).some(({ role }) => ROLES.includes(role))) redirect("/painel");
+  const { roles, error: roleError } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (roleError || !roles.some((role) => ROLES.includes(role))) redirect("/painel");
 
   const [orders, pickups, deliveries, completedTrips, failedStops, completedStops, cancelledOrders, overdueStops, activeDrivers] = await Promise.all([
     supabase.from("orders").select("id", { count: "exact", head: true }).gte("created_at", startIso).lt("created_at", endIso),
@@ -87,7 +88,7 @@ export default async function IndicadoresPage({ searchParams }: { searchParams: 
   ];
 
   return <main className={styles.page}>
-    <header className={styles.header}><div><p className={styles.eyebrow}>MalhaX · backoffice</p><h1>Visão de controle</h1><p>Indicadores e atalhos para acompanhar a operação no mesmo backoffice.</p></div><strong>{label}</strong></header>
+    <header className={styles.header}><div><p className={styles.eyebrow}>Gestão</p><h1>Indicadores</h1><p>Números reais da operação por mês, semestre ou ano. Escolha os cartões e exporte em CSV.</p></div><strong>{label}</strong></header>
     <nav className={styles.controlLinks} aria-label="Acesso rápido aos módulos"><Link href="/painel/ao-vivo"><span>⌖</span><strong>Acompanhamento ao vivo</strong><small>Posição e status dos motoristas</small></Link><Link href="/painel/historico-motoristas"><span>↗</span><strong>Histórico de rotas</strong><small>Trajetos e exportação para análise</small></Link><Link href="/painel/suporte"><span>◌</span><strong>Atendimento ao motorista</strong><small>Conversas e solicitações de suporte</small></Link><Link href="/painel/motoristas"><span>♙</span><strong>Gestão de motoristas</strong><small>Cadastro e situação da equipe</small></Link></nav>
     <nav className={styles.periodTabs} aria-label="Selecionar período"><Link aria-current={period === "month" ? "page" : undefined} className={period === "month" ? styles.periodActive : ""} href={`?period=month&year=${year}&month=${month}`}>Mês</Link><Link aria-current={period === "semester" ? "page" : undefined} className={period === "semester" ? styles.periodActive : ""} href={`?period=semester&year=${year}&semester=${semester}`}>Semestre</Link><Link aria-current={period === "year" ? "page" : undefined} className={period === "year" ? styles.periodActive : ""} href={`?period=year&year=${year}`}>Ano</Link></nav>
     <form method="get" className={styles.filters}>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { ClienteForm } from "./form";
 import styles from "./clients.module.css";
 
@@ -15,8 +16,8 @@ export default async function ClientesPage({ searchParams }: { searchParams: Pro
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: roles } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (!roles?.some(({ role }) => ROLES.has(role))) redirect("/painel");
+  const { roles } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (!roles.some((role) => ROLES.has(role))) redirect("/painel");
 
   const { data, error } = await supabase.from("clients")
     .select("id, name, active, created_at")

@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "../../../lib/supabase/database.types";
 import { createClient } from "../../../lib/supabase/server";
+import { getCurrentOrganizationRoles } from "../../../lib/supabase/organization-roles";
 import { rejectCargoTransfer } from "./actions";
 import { CargoTransferRequestForm } from "./CargoTransferRequestForm";
 import { ApproveTransfer } from "./ApproveTransfer";
@@ -16,10 +19,10 @@ export default async function CargoTransfersPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
-  const { data: roles } = await supabase.from("organization_member_roles").select("role").eq("user_id", user.id);
-  if (!(roles ?? []).some((r) => ["admin", "manager", "dispatcher", "support"].includes(r.role))) redirect("/painel");
-  const canReview = (roles ?? []).some((r) => ["admin", "manager", "support"].includes(r.role));
-  const db = supabase as any;
+  const { roles } = await getCurrentOrganizationRoles(supabase, user.id);
+  if (!roles.some((role) => ["admin", "manager", "dispatcher", "support"].includes(role))) redirect("/painel");
+  const canReview = roles.some((role) => ["admin", "manager", "support"].includes(role));
+  const db = supabase as unknown as SupabaseClient<Database>;
   const [{ data: tripRows }, { data: transferRows, error }] = await Promise.all([
     db.from("trips").select("id, trip_number, status, drivers(profiles!drivers_profile_id_fkey(full_name))").in("status", ["assigned", "accepted", "in_progress"]).order("planned_start_at", { ascending: true }),
     db.from("cargo_transfers").select("id,status,reason,details,requested_at,source_trip:trips!cargo_transfers_source_trip_id_fkey(trip_number,drivers(profiles!drivers_profile_id_fkey(full_name))),destination_trip:trips!cargo_transfers_destination_trip_id_fkey(trip_number,drivers(profiles!drivers_profile_id_fkey(full_name))),cargo_transfer_items(packages(package_code,description,quantity)),cargo_transfer_events(id,event_type,details,occurred_at)").order("requested_at", { ascending: false }).limit(80),
